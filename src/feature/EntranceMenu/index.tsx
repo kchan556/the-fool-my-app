@@ -1,76 +1,47 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
-import { CardsDialogProvider } from '../cards-dialog';
-import { CardEffectDialogProvider } from '../card-effect-dialog';
-import { CardUsageEffectProvider } from '../card-usage-effect';
-import { InterceptUsageProvider } from '../intercept-usage';
-import { TimerProvider } from '@/feature/Timer/context';
-import { UnitSelectionProvider } from '../unit-selection';
-import { ChoicePanelProvider } from '@/feature/ChoicePanel/context';
-import { MulliganProvider } from '../mulligan/context';
-import { AnimationProvider } from '../animation';
-import { SelectEffectProvider } from '../select-effect';
-import { OverclockEffectProvider } from '../overclock-effect';
-import { StatusChangeProvider } from '../status-change';
-import { UnitPositionProvider } from '../unit-position';
-import { TurnChangeEffectProvider } from '../turn-change-effect';
-import { SoundManagerV2Provider } from '../soundV2';
-import { AttackAnimationProvider } from '../attack-animation';
-import { useErrorOverlay } from '../error-overlay';
-import { GameResultProvider } from '../game-result';
+import React from 'react';
+import Link from 'next/link';
+import { useDeck } from '@/hooks/deck';
+import { useOriginalityMap } from '@/hooks/originality';
+import { originality } from '@/helper/originality';
 
-interface Props {
-  children: ReactNode;
-}
+export const EntranceMenu = () => {
+  const { decks, mainDeck } = useDeck();
+  const { opMap, isLoading } = useOriginalityMap();
 
-const ErrorClearer = ({ children }: { children: ReactNode }) => {
-  const { hideOverlay } = useErrorOverlay();
-
-  useEffect(() => {
-    hideOverlay();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return <>{children}</>;
-};
-
-export const GameContextProvider = ({ children }: Props) => {
   return (
-    <ErrorClearer>
-      <SoundManagerV2Provider>
-        <AttackAnimationProvider>
-          <CardsDialogProvider>
-            <CardEffectDialogProvider>
-              <CardUsageEffectProvider>
-                <InterceptUsageProvider>
-                  <TimerProvider>
-                    <ChoicePanelProvider>
-                      <MulliganProvider>
-                        <UnitSelectionProvider>
-                          <AnimationProvider>
-                            <SelectEffectProvider>
-                              <OverclockEffectProvider>
-                                <StatusChangeProvider>
-                                  <UnitPositionProvider>
-                                    <TurnChangeEffectProvider>
-                                      <GameResultProvider>{children}</GameResultProvider>
-                                    </TurnChangeEffectProvider>
-                                  </UnitPositionProvider>
-                                </StatusChangeProvider>
-                              </OverclockEffectProvider>
-                            </SelectEffectProvider>
-                          </AnimationProvider>
-                        </UnitSelectionProvider>
-                      </MulliganProvider>
-                    </ChoicePanelProvider>
-                  </TimerProvider>
-                </InterceptUsageProvider>
-              </CardUsageEffectProvider>
-            </CardEffectDialogProvider>
-          </CardsDialogProvider>
-        </AttackAnimationProvider>
-      </SoundManagerV2Provider>
-    </ErrorClearer>
+    <div className="flex flex-col gap-4 w-full max-w-md mx-auto p-6">
+      <Link
+        href="/matching"
+        className="block w-full py-4 text-center bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors"
+      >
+        対戦を開始する
+      </Link>
+      
+      <Link
+        href="/builder"
+        className="block w-full py-4 text-center bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors"
+      >
+        デッキを作る
+      </Link>
+
+      <Link
+        href="/deck"
+        className="block w-full py-4 text-center bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors"
+      >
+        デッキ管理
+      </Link>
+
+      {mainDeck && (
+        <div className="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700">
+          <p className="text-gray-400 text-sm">現在のメインデッキ</p>
+          <p className="text-white font-medium">{mainDeck.title}</p>
+          <p className="text-blue-400 text-xs mt-1">
+            Originality: {isLoading ? '...' : originality([...mainDeck.cards, ...(mainDeck.jokers ?? [])], opMap)}P
+          </p>
+        </div>
+      )}
+    </div>
   );
 };
