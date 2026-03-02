@@ -1,3 +1,4 @@
+'use client';
 import { PlayerNameEditor } from './PlayerNameEditor';
 import { DeckSelector } from './DeckSelector';
 import { AuthStatus } from './AuthStatus';
