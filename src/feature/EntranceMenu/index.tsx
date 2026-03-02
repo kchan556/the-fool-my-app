@@ -1,32 +1,76 @@
 'use client';
-import { PlayerNameEditor } from './PlayerNameEditor';
-import { DeckSelector } from './DeckSelector';
-import { AuthStatus } from './AuthStatus';
-import { MigrationBanner } from './MigrationBanner';
-import { TicketRedeem } from './TicketRedeem';
-import { PlayStatus } from './PlayStatus';
 
-export const EntranceMenu = () => {
+import { ReactNode, useEffect } from 'react';
+import { CardsDialogProvider } from '../cards-dialog';
+import { CardEffectDialogProvider } from '../card-effect-dialog';
+import { CardUsageEffectProvider } from '../card-usage-effect';
+import { InterceptUsageProvider } from '../intercept-usage';
+import { TimerProvider } from '@/feature/Timer/context';
+import { UnitSelectionProvider } from '../unit-selection';
+import { ChoicePanelProvider } from '@/feature/ChoicePanel/context';
+import { MulliganProvider } from '../mulligan/context';
+import { AnimationProvider } from '../animation';
+import { SelectEffectProvider } from '../select-effect';
+import { OverclockEffectProvider } from '../overclock-effect';
+import { StatusChangeProvider } from '../status-change';
+import { UnitPositionProvider } from '../unit-position';
+import { TurnChangeEffectProvider } from '../turn-change-effect';
+import { SoundManagerV2Provider } from '../soundV2';
+import { AttackAnimationProvider } from '../attack-animation';
+import { useErrorOverlay } from '../error-overlay';
+import { GameResultProvider } from '../game-result';
+
+interface Props {
+  children: ReactNode;
+}
+
+const ErrorClearer = ({ children }: { children: ReactNode }) => {
+  const { hideOverlay } = useErrorOverlay();
+
+  useEffect(() => {
+    hideOverlay();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <>{children}</>;
+};
+
+export const GameContextProvider = ({ children }: Props) => {
   return (
-    <div className="space-y-6 rounded-lg max-w-lg mx-auto shadow-md">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-black mb-4">ゲーム設宁E/h2>
-      </div>
-      {process.env.DISABLE_AUTH === 'true' ? (
-        <>
-          <PlayerNameEditor />
-          <DeckSelector />
-        </>
-      ) : (
-        <>
-          <AuthStatus />
-          <MigrationBanner />
-          <PlayerNameEditor />
-          <DeckSelector />
-          <TicketRedeem />
-          <PlayStatus />
-        </>
-      )}
-    </div>
+    <ErrorClearer>
+      <SoundManagerV2Provider>
+        <AttackAnimationProvider>
+          <CardsDialogProvider>
+            <CardEffectDialogProvider>
+              <CardUsageEffectProvider>
+                <InterceptUsageProvider>
+                  <TimerProvider>
+                    <ChoicePanelProvider>
+                      <MulliganProvider>
+                        <UnitSelectionProvider>
+                          <AnimationProvider>
+                            <SelectEffectProvider>
+                              <OverclockEffectProvider>
+                                <StatusChangeProvider>
+                                  <UnitPositionProvider>
+                                    <TurnChangeEffectProvider>
+                                      <GameResultProvider>{children}</GameResultProvider>
+                                    </TurnChangeEffectProvider>
+                                  </UnitPositionProvider>
+                                </StatusChangeProvider>
+                              </OverclockEffectProvider>
+                            </SelectEffectProvider>
+                          </AnimationProvider>
+                        </UnitSelectionProvider>
+                      </MulliganProvider>
+                    </ChoicePanelProvider>
+                  </TimerProvider>
+                </InterceptUsageProvider>
+              </CardUsageEffectProvider>
+            </CardEffectDialogProvider>
+          </CardsDialogProvider>
+        </AttackAnimationProvider>
+      </SoundManagerV2Provider>
+    </ErrorClearer>
   );
 };
