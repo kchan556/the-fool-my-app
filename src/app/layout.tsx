@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 // まとめてインポートするのではなく、直接ファイルを指定します
-import { GlobalContextProvider } from '@/hooks/context'; 
+import { GlobalContextProvider } from '@/hooks/index';
 import { AuthProvider } from '@/hooks/auth';
 import { DeckProvider } from '@/hooks/deck';
 import { Analytics } from '@vercel/analytics/next';
