@@ -1,8 +1,7 @@
-'use client';
-
 import Link from 'next/link';
 import type { Profile, UserIpLog } from '@/type/supabase';
 
+// 'use client' は不要なので削除しました（サーバー側でレンダリング可能にするため）
 type IpLogWithProfile = UserIpLog & { profile?: Profile | null };
 
 export function IpLogTable({ logs }: { logs: IpLogWithProfile[] }) {
@@ -13,7 +12,7 @@ export function IpLogTable({ logs }: { logs: IpLogWithProfile[] }) {
           <tr>
             <th className="py-2 px-3">ユーザー</th>
             <th className="py-2 px-3">IPアドレス</th>
-            <th className="py-2 px-3 hidden md:table-cell">記録日晁E/th>
+            <th className="py-2 px-3 hidden md:table-cell">記録日時</th>
           </tr>
         </thead>
         <tbody>
