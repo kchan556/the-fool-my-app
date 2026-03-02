@@ -1,0 +1,55 @@
+# config
+game:
+  system:
+    round: 10
+    turnTime: 60 # ターン時間（秒）
+    draw:
+      top: 2
+      override: 1
+      mulligan: 4
+    handicap:
+      # 先攻1Tのドローを無効にする?
+      draw: true
+      # 先攻1Tのアタックを無効にする?
+      attack: true
+      # 後攻1TのCPを1多い状態で始める?
+      cp: true
+    cp:
+      # 1TのCP
+      init: 2
+      # ラウンド毎に増える量
+      increase: 1
+      # increaseによって増やされる最大量
+      max: 7
+      # CPの最大保有可能量
+      ceil: 12
+      # ラウンドを跨いで持ち越せるか?
+      carryover: false
+  player:
+    max:
+      life: 8
+      hand: 7
+      trigger: 4
+      field: 5
+  misc:
+    # オーバーライドを厳密にするか
+    strictOverride: false
+    # タイムアウトを強制するか
+    autoEndOnTimeout: true
+    # コスト分のライフダメージを与えるか
+    damageAsCost: false
+  joker:
+    # 自傷ダメージでジョーカーゲージを増加させるか
+    suicide: false
+    # 1stジョーカーのみ使用可能にするか
+    single: false
+    # ジョーカーが使用可能になったら手札に加えるか（Ver.1系）
+    inHand: false
+    # 初期ジョーカーゲージ
+    gauge: 0
+    # ライフダメージ時のゲージ増加量
+    lifeDamage: 10
+    # ターン終了時の最大ゲージ増加量
+    maxTurnEnd: 15
+    # ターン終了時の最小ゲージ増加量
+    minTurnEnd: 2.5

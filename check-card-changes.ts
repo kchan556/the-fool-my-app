@@ -1,0 +1,114 @@
+#!/usr/bin/env bun
+/**
+ *releaseブランチとの間のカード変更を確認するスクリプト
+ * 使用方法: bun run check-card-changes.ts
+ */
+
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+interface CatalogCard {
+  id: string;
+  name: string;
+  [key: string]: any;
+}
+
+console.log('Checking card changes between current branch and release...');
+console.log('================================================================\n');
+
+// releaseブランチとの差分を取得
+// core.quotepath=false で日本語ファイル名のエスケープを防ぐ
+const gitDiff = execSync(
+  'git -c core.quotepath=false diff origin/release --name-status -- "src/game-data/effects/cards/*.ts"',
+  {
+    encoding: 'utf-8',
+    stdio: ['pipe', 'pipe', 'ignore'], // stderrを無視してwarningを非表示に
+  }
+);
+
+// catalog.jsonを読み込み
+const catalogPath = join(process.cwd(), 'src/submodule/suit/catalog/catalog.json');
+const catalog: CatalogCard[] = JSON.parse(readFileSync(catalogPath, 'utf-8'));
+
+// IDでインデックス化（検索を高速化）
+const catalogMap = new Map<string, string>();
+for (const card of catalog) {
+  catalogMap.set(card.id, card.name);
+}
+
+// 差分を処理してグループ化
+interface CardChange {
+  status: string;
+  id: string;
+  name: string;
+}
+
+const changes: CardChange[] = [];
+const lines = gitDiff
+  .trim()
+  .split('\n')
+  .filter(line => line);
+
+for (const line of lines) {
+  const [status, file] = line.split('\t');
+
+  // ファイル名からIDを抽出
+  const filename = file?.split('/').pop() || '';
+  const id = filename.replace('.ts', '');
+
+  // カード名を取得
+  const name = catalogMap.get(id) || '(カード名が見つかりません)';
+
+  // @ts-ignore
+  changes.push({ status, id, name });
+}
+
+// ステータスごとにグループ化して表示
+const statusGroups: { [key: string]: CardChange[] } = {};
+const statusOrder = ['M', 'A', 'D']; // Modified, Added, Deleted の順
+
+for (const change of changes) {
+  if (!statusGroups[change.status]) {
+    statusGroups[change.status] = [];
+  }
+
+  // @ts-ignore
+  statusGroups[change.status].push(change);
+}
+
+// ステータスごとに表示
+for (const status of statusOrder) {
+  const group = statusGroups[status];
+  if (!group || group.length === 0) continue;
+
+  let _statusLabel: string;
+  let groupTitle: string;
+  switch (status) {
+    case 'A':
+      _statusLabel = '[NEW]     ';
+      groupTitle = '## 追加\n\n- 以下のカードを追加しました。\n';
+      break;
+    case 'M':
+      _statusLabel = '[MODIFIED]';
+      groupTitle = '## 修正\n\n- 以下のカードの不具合を修正しました。\n';
+      break;
+    case 'D':
+      _statusLabel = '[DELETED] ';
+      groupTitle = '削除';
+      break;
+    default:
+      _statusLabel = `[${status}]       `;
+      groupTitle = status;
+  }
+
+  console.log(`\n${groupTitle}`);
+  console.log(`| カードID | カード名 |${status === 'M' ? ' 内容 |' : ''}`);
+  console.log(`| -- | -- |${status === 'M' ? ' -- |' : ''}`);
+  for (const change of group) {
+    console.log(`| ${change.id} | ${change.name} |${status === 'M' ? '  |' : ''}`);
+  }
+}
+
+console.log('\n================================================================');
+console.log('Done.');
