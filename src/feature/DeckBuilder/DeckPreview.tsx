@@ -17,7 +17,7 @@ export const DeckPreview = ({ deck, onClose, children }: DeckPreviewProps) => {
       <div className="flex flex-col items-center">
         <DeckCardGrid cards={deck.cards} jokers={deck.jokers} />
         <div className="mt-6 flex justify-center gap-2">
-          <RichButton onClick={onClose}>閉じる</RichButton>
+          <RichButton onClick={onClose}>閉じめE/RichButton>
           {children}
         </div>
       </div>

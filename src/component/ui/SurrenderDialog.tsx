@@ -40,19 +40,19 @@ export const SurrenderDialog: React.FC<SurrenderDialogProps> = ({ onClose }) => 
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg z-50">
       <div className="flex flex-col items-center p-4">
-        <div className="text-white text-lg mb-4">サレンダーしますか？</div>
+        <div className="text-white text-lg mb-4">サレンダーしますか�E�E/div>
         <div className="flex gap-5">
           <button
             className="bg-red-600 text-white py-2 px-5 border-0 rounded cursor-pointer hover:bg-red-700"
             onClick={handleYes}
           >
-            はい
+            はぁE
           </button>
           <button
             className="bg-blue-600 text-white py-2 px-5 border-0 rounded cursor-pointer hover:bg-blue-700"
             onClick={handleNo}
           >
-            いいえ
+            ぁE��ぁE
           </button>
         </div>
       </div>

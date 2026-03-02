@@ -13,7 +13,7 @@ export const Field = ({ playerId, isOwnField = false }: FieldProps) => {
 
   return (
     <div className="relative flex justify-center items-center gap-4 h-42">
-      {/* 画面カバー: ボタン表示中のみ有効 */}
+      {/* 画面カバ�E: ボタン表示中のみ有効 */}
       {activeUnit && (
         <div
           className="absolute inset-0 z-19"

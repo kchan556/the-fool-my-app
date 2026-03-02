@@ -19,19 +19,19 @@ export const UnitSelectionButton = ({ unitId }: UnitSelectionButtonProps) => {
   // Determine button text and color based on selection mode
   const buttonConfig = {
     select: {
-      text: "選択",
+      text: "選抁E,
       bgColor: "bg-white",
       textColor: "text-black",
       borderColor: "border-gray-500",
     },
     target: {
-      text: "ターゲット",
+      text: "ターゲチE��",
       bgColor: "bg-red-500",
       textColor: "text-white",
       borderColor: "border-red-700",
     },
     block: {
-      text: "ブロック",
+      text: "ブロチE��",
       bgColor: "bg-blue-500",
       textColor: "text-white",
       borderColor: "border-blue-700",

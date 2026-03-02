@@ -26,7 +26,7 @@ export const MyArea = () => {
   const self = usePlayer(playerId);
 
   const handleDeckClick = useCallback(() => {
-    openCardsDialog((deck ?? []) as ICard[], 'あなたのデッキ');
+    openCardsDialog((deck ?? []) as ICard[], 'あなた�EチE��キ');
   }, [openCardsDialog, deck]);
 
   // サレンダー
@@ -79,7 +79,7 @@ export const MyArea = () => {
             <div className="font-bold text-lg whitespace-nowrap text-ellipsis">
               {self?.name || ''}
             </div>
-            <div className={`text-sm ${defaultUIColors.text.secondary}`}>あなた</div>
+            <div className={`text-sm ${defaultUIColors.text.secondary}`}>あなぁE/div>
             <div
               className="flex flex-col gap-2 hover:bg-gray-200/10 rounded my-1 py-1"
               onClick={handleLifeClick}

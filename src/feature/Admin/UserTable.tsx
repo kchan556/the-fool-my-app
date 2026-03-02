@@ -52,8 +52,8 @@ export function UserTable({ users }: { users: (Profile & { credits: number })[] 
             <tr className="text-gray-400 border-b border-gray-700">
               <th className="text-left py-2">ユーザー</th>
               <th className="text-left py-2">Discord ID</th>
-              <th className="text-left py-2">クレジット</th>
-              <th className="text-left py-2">管理者</th>
+              <th className="text-left py-2">クレジチE��</th>
+              <th className="text-left py-2">管琁E��E/th>
               <th className="text-left py-2">登録日</th>
               <th className="text-left py-2"></th>
             </tr>
@@ -94,20 +94,20 @@ export function UserTable({ users }: { users: (Profile & { credits: number })[] 
                         onClick={handleSaveCredits}
                         className="px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700"
                       >
-                        保存
+                        保孁E
                       </button>
                       <button
                         onClick={() => setEditingCredits(null)}
                         className="px-2 py-1 bg-gray-600 text-gray-300 rounded text-xs hover:bg-gray-500"
                       >
-                        取消
+                        取涁E
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={() => handleStartEditCredits(user.id, user.credits)}
                       className="text-white hover:text-indigo-400 transition-colors"
-                      title="クリックして編集"
+                      title="クリチE��して編雁E
                     >
                       {user.credits}
                     </button>
@@ -120,7 +120,7 @@ export function UserTable({ users }: { users: (Profile & { credits: number })[] 
                       user.is_admin ? 'bg-indigo-600 text-white' : 'bg-gray-600 text-gray-300'
                     }`}
                   >
-                    {user.is_admin ? '管理者' : '一般'}
+                    {user.is_admin ? '管琁E��E : '一般'}
                   </button>
                 </td>
                 <td className="py-2 text-gray-400">

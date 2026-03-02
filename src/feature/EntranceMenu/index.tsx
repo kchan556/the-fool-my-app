@@ -9,7 +9,7 @@ export const EntranceMenu = () => {
   return (
     <div className="space-y-6 rounded-lg max-w-lg mx-auto shadow-md">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-black mb-4">ゲーム設定</h2>
+        <h2 className="text-2xl font-bold text-black mb-4">ゲーム設宁E/h2>
       </div>
       {process.env.DISABLE_AUTH === 'true' ? (
         <>

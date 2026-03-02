@@ -46,20 +46,20 @@ function PlayerCell({
     <div className="flex items-center gap-2">
       <WinnerBadge playerIndex={playerIndex} winnerIndex={winnerIndex} />
       {firstPlayerIndex === playerIndex && (
-        <span className="text-xs font-medium text-blue-600">先</span>
+        <span className="text-xs font-medium text-blue-600">允E/span>
       )}
       {firstPlayerIndex !== null && firstPlayerIndex !== playerIndex && (
-        <span className="text-xs font-medium text-red-600">後</span>
+        <span className="text-xs font-medium text-red-600">征E/span>
       )}
       {player.id ? (
         <Link
           href={`/admin/users/${player.id}`}
           className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
         >
-          {player.name || '不明'}
+          {player.name || '不�E'}
         </Link>
       ) : (
-        <span className="text-sm text-gray-900">{player.name || '不明'}</span>
+        <span className="text-sm text-gray-900">{player.name || '不�E'}</span>
       )}
     </div>
   );
@@ -93,7 +93,7 @@ export function GlobalMatchHistory({
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    日時
+                    日晁E
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">
                     種別
@@ -105,13 +105,13 @@ export function GlobalMatchHistory({
                     プレイヤー1
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
-                    デッキ
+                    チE��キ
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     プレイヤー2
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
-                    デッキ
+                    チE��キ
                   </th>
                 </tr>
               </thead>

@@ -25,7 +25,7 @@ function AuthErrorContent() {
             href="/entrance"
             className="block w-full px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
           >
-            エントランスへ戻る
+            エントランスへ戻めE
           </Link>
         </div>
       </div>

@@ -16,7 +16,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const errorOverlayContext = useContext(ErrorOverlayContext);
 
   useEffect(() => {
-    // エラーハンドラーを設定
+    // エラーハンドラーを設宁E
     if (errorOverlayContext) {
       webSocketService.setErrorHandler((message, title, onConfirm) => {
         errorOverlayContext.showError(message, title, onConfirm);

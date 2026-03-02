@@ -11,7 +11,7 @@ export function IpLogTable({ logs }: { logs: IpLogWithProfile[] }) {
           <tr>
             <th className="py-2 px-3">ユーザー</th>
             <th className="py-2 px-3">IPアドレス</th>
-            <th className="py-2 px-3 hidden md:table-cell">記録日時</th>
+            <th className="py-2 px-3 hidden md:table-cell">記録日晁E/th>
           </tr>
         </thead>
         <tbody>

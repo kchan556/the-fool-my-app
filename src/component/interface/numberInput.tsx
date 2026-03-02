@@ -47,7 +47,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         {label}
         {tooltipId && (
           <span data-tooltip-id={tooltipId} className="ml-1 text-gray-400 cursor-help">
-            ⓘ
+            ⓁE
           </span>
         )}
       </label>

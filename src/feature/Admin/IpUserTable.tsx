@@ -15,7 +15,7 @@ export function IpUserTable({ users }: { users: IpUser[] }) {
           <tr>
             <th className="py-2 px-3">ユーザー</th>
             <th className="py-2 px-3 hidden md:table-cell">Discord ID</th>
-            <th className="py-2 px-3">最終記録日時</th>
+            <th className="py-2 px-3">最終記録日晁E/th>
           </tr>
         </thead>
         <tbody>

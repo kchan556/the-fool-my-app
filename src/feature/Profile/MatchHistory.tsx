@@ -12,7 +12,7 @@ function ResultBadge({ result }: { result: 'win' | 'lose' | 'unknown' }) {
   const labels = {
     win: '勝利',
     lose: '敗北',
-    unknown: '不明',
+    unknown: '不�E',
   };
 
   return (
@@ -56,7 +56,7 @@ export function MatchHistory({
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    日時
+                    日晁E
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     結果
@@ -68,16 +68,16 @@ export function MatchHistory({
                     R数
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">
-                    先/後
+                    允E征E
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    対戦相手
+                    対戦相扁E
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
-                    自分のデッキ
+                    自刁E�EチE��キ
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
-                    相手のデッキ
+                    相手�EチE��キ
                   </th>
                 </tr>
               </thead>
@@ -119,11 +119,11 @@ export function MatchHistory({
                           href={`${profileLinkPrefix}${match.opponent.id}`}
                           className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
                         >
-                          {match.opponent.name || '不明'}
+                          {match.opponent.name || '不�E'}
                         </Link>
                       ) : (
                         <span className="text-sm text-gray-900">
-                          {match.opponent.name || '不明'}
+                          {match.opponent.name || '不�E'}
                         </span>
                       )}
                     </td>

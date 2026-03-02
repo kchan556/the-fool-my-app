@@ -81,7 +81,7 @@ export const GameResultProvider = ({ children }: { children: ReactNode }) => {
 
       dispatch({ type: 'SHOW_RESULT', reason: params.reason, result });
 
-      // 既存のタイムアウトをクリア
+      // 既存�Eタイムアウトをクリア
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
