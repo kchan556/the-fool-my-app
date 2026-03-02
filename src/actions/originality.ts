@@ -27,7 +27,7 @@ async function fetchOriginalityMap(): Promise<Record<string, number>> {
 
   // 全カタログカードIDにOPポイントをマッピング
   const opMap: Record<string, number> = {};
-  const highestPoints = ORIGINALITY_TIERS[ORIGINALITY_TIERS.length - 1].points;
+  const highestPoints = ORIGINALITY_TIERS[ORIGINALITY_TIERS.length - 1]?.points ?? 0;
 
   master.forEach((catalog, cardId) => {
     opMap[cardId] = nameToPoints.get(catalog.name) ?? highestPoints;
