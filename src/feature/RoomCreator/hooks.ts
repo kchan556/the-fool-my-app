@@ -1,11 +1,8 @@
-// ↓ここから下のコードだけにしてください（最初の2行は削除！）
 import { useWebSocket } from '@/hooks/websocket/hooks';
 import { useSelfId } from '@/hooks/player-identity';
 import { Message, RoomOpenRequestPayload, RoomOpenResponsePayload } from '@/submodule/suit/types';
 import { useRouter } from 'next/navigation';
-import { FormEvent, FormEventHandler, useCallback } from 'react';
-
-// ...（以下、元のコードと同じ）
+import { FormEvent, useCallback } from 'react';
 
 // ドット区切りのキーをネストされたオブジェクトに変換する関数
 const setNestedValue = (obj: any, path: string, value: any) => {
