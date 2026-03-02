@@ -2,7 +2,7 @@ import { DeckBuilder } from '@/feature/DeckBuilder';
 import { defaultUIColors } from '@/helper/color';
 import { getImplementedCardIds } from '@/helper/card';
 import { getOriginalityMap } from '@/actions/originality';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
