@@ -1,21 +1,18 @@
-'use client';
-
 import Link from 'next/link';
 import { getUsersByIp } from '@/actions/admin';
 import { IpUserTable } from '@/feature/Admin/IpUserTable';
 import { Pagination } from '@/component/ui/Pagination';
 
+// 'use client'; は消しました（サーバーコンポーネントとして動作させます）
+
 export const dynamic = 'force-dynamic';
 
-export default async function IpDetailPage({
-  params,
-  searchParams,
-}: {
+export default async function IpDetailPage(props: {
   params: Promise<{ ip: string }>;
   searchParams: Promise<{ page?: string }>;
 }) {
-  const { ip } = await params;
-  const query = await searchParams;
+  const { ip } = await props.params;
+  const query = await props.searchParams;
   const page = Math.max(1, Number(query.page) || 1);
   const ipAddress = decodeURIComponent(ip);
 
