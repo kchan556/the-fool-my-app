@@ -186,7 +186,7 @@ async function fetchWeightedRanking(): Promise<RankingMasterResponse> {
 
   for (let i = 0; i < results.length; i++) {
     const weight = weeks[i]?.weight ?? 1;
-    for (const entry of results[i].ranking) {
+    for (const entry of results[i]?.ranking ?? []) {
       const existing = weightedCounts.get(entry.name);
       if (existing) {
         existing.useCount += entry.useCount * weight;
