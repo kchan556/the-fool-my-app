@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { getUserProfile, getUserMatches } from '@/actions/profile';
 import { ProfileHeader } from '@/feature/Profile/ProfileHeader';

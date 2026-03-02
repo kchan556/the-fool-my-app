@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { getUsersByIp } from '@/actions/admin';
 import { IpUserTable } from '@/feature/Admin/IpUserTable';
