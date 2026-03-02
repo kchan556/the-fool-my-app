@@ -9,7 +9,13 @@ import { useState } from 'react';
 import { DeckData } from '@/type/deck';
 import { DeckPreview } from '../DeckBuilder/DeckPreview';
 
-export const DeckManagement = () => {
+// 受け取るデータの形を定義
+interface DeckManagementProps {
+  userId: string;
+}
+
+// () の中身を書き換えて userId を受け取れるようにする
+export const DeckManagement = ({ userId }: DeckManagementProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [previewDeck, setPreviewDeck] = useState<DeckData>();
   const { decks, mainDeck, setMainDeck, deleteDeck, setDeckPublic } = useDeck();
