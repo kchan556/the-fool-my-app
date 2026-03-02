@@ -12,7 +12,7 @@ function getPointsForRank(rank: number): number {
     }
   }
   // Default to highest tier for unranked
-  return ORIGINALITY_TIERS[ORIGINALITY_TIERS.length - 1].points;
+  return ORIGINALITY_TIERS[ORIGINALITY_TIERS.length - 1]?.points ?? 0;
 }
 
 async function fetchOriginalityMap(): Promise<Record<string, number>> {
