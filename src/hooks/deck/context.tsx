@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState, useContext, type ReactNode } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { DeckService } from '@/service/deck-service';
 import { setDeckPublic as setDeckPublicAction } from '@/actions/deck';
@@ -72,14 +72,12 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
     }
   }, [userId, isAuthSkipped]);
 
-  // 認証完了時にリフレッシュ
   useEffect(() => {
     if (!isAuthLoading) {
       refreshDecks();
     }
   }, [isAuthLoading, refreshDecks]);
 
-  // 保存
   const saveDeck = useCallback(
     async (
       title: string,
@@ -100,7 +98,6 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
     [userId, isAuthSkipped, refreshDecks]
   );
 
-  // 削除
   const deleteDeck = useCallback(
     async (deckId: string): Promise<void> => {
       await DeckService.deleteDeck(userId, deckId);
@@ -109,7 +106,6 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
     [userId, refreshDecks]
   );
 
-  // メイン設定
   const setMainDeck = useCallback(
     async (deckId: string): Promise<void> => {
       await DeckService.setMainDeck(userId, deckId);
@@ -118,19 +114,17 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
     [userId, refreshDecks]
   );
 
-  // 公開設定
   const setDeckPublicState = useCallback(
     async (deckId: string, isPublic: boolean): Promise<void> => {
       const result = await setDeckPublicAction(deckId, isPublic);
       if (!result) {
-        throw new Error('公開状態の切り替えに失敗しました');
+        throw new Error('Failed to toggle public status');
       }
       await refreshDecks();
     },
     [refreshDecks]
   );
 
-  // 移行
   const migrateFromLocalStorage = useCallback(async (): Promise<{
     success: number;
     failed: number;
@@ -144,7 +138,6 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
     return result;
   }, [userId, refreshDecks]);
 
-  // クリア
   const clearLocalStorage = useCallback(() => {
     DeckService.clearLocalStorage();
     setHasLocalDecks(false);
@@ -168,13 +161,26 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
     [
       decks,
       mainDeck,
-      isLoading
-      import { useContext } from 'react'; // ファイルの上のほうに import がなければ追加してください
+      isLoading,
+      isAuthLoading,
+      error,
+      refreshDecks,
+      saveDeck,
+      deleteDeck,
+      setMainDeck,
+      setDeckPublicState,
+      migrateFromLocalStorage,
+      clearLocalStorage,
+      hasLocalDecks,
+    ]
+  );
+
+  return <DeckContext.Provider value={value}>{children}</DeckContext.Provider>;
+};
 
 export const useDeck = () => {
   const context = useContext(DeckContext);
 
-  // ✅ サーバーサイド（Vercelのビルド中）はダミーの値を返してエラーを防ぐ
   if (typeof window === 'undefined') {
     return {
       decks: [],
