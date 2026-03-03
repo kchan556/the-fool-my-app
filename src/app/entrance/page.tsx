@@ -1,12 +1,11 @@
 import { RoomCreator } from '@/feature/RoomCreator';
 import { RoomEntrance } from '@/feature/RoomEntrance';
 import { EntranceMenu } from '@/feature/EntranceMenu';
-import type { Metadata } from '@/feature/Matching';
+import { Matching } from '@/feature/Matching';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getMyProfile } from '@/actions/profile';
-// FIXME: TS 5.9 + Next.js 16.1.6 で 'next/navigation' から redirect をインポ�Eトすると TS2305 が発生するため�E部パスを使用、E
-import { redirect } from 'next/dist/client/components/redirect';
+import { redirect } from 'next/navigation'; // 正しいインポートに戻します
 
 export const metadata: Metadata = {
   title: 'Entrance',
@@ -26,21 +25,21 @@ export default async function Page() {
           href={'/builder'}
           className="inline-block px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
         >
-          チE��キ編雁E
+          デッキ編集
         </Link>
         <EntranceMenu />
         {process.env.DISABLE_AUTH !== 'true' && <Matching />}
         {process.env.DISABLE_ROOM_CREATION === 'true' ? (
           <div className="max-w-lg mx-auto text-center p-3 my-3 bg-red-900 border border-red-600 rounded-md">
             <p className="text-red-200 text-sm">
-              現在公式サーバ上ではルーム作�E機�Eを提供しておりません
+              現在公式サーバ上ではルーム作成機能を提供しておりません
               <br />
-              ランダムマッチングをお楽しみ下さぁE
+              ランダムマッチングをお楽しみください
               <br />
               <span className="text-[10px] text-red-100">
-                公開されてぁE��ソースコードを利用して個人サーバを建てることで
+                公開されているソースコードを利用して個人サーバを建てることで
                 <br />
-                引き続きルーム作�E機�Eを利用することが�E来まぁE
+                引き続きルーム作成機能を利用することが出来ます
               </span>
             </p>
           </div>
