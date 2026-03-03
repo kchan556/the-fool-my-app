@@ -1,4 +1,4 @@
-import { getUserById } from '@/actions/admin'; // ユーザー取得用のActionがあると仮定
+// 存在しない getUserById のインポートを削除しました
 import { AdminNav } from '@/feature/Admin/AdminNav';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default async function AdminUserDetailPage({ params }: Props) {
-  // サーバーサイドで安全にIDを取得
+  // params を await して ID を取得
   const { id } = await params;
 
   return (
@@ -24,11 +24,10 @@ export default async function AdminUserDetailPage({ params }: Props) {
               <dt className="text-gray-400 text-sm">ユーザーID</dt>
               <dd className="font-mono bg-gray-900 p-2 rounded mt-1">{id}</dd>
             </div>
-            {/* ここに詳細なプロフィール情報を追加していく */}
           </dl>
           
-          <div className="mt-8 text-gray-500 text-sm">
-            ※ユーザーの詳細データ取得ロジックをここに実装してください。
+          <div className="mt-8 p-4 bg-blue-900/20 border border-blue-800 rounded text-blue-200 text-sm">
+            💡 現在、詳細データの取得ロジックを調整中です。
           </div>
         </div>
       </div>
