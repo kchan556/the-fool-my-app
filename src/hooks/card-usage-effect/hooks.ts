@@ -6,8 +6,8 @@ import { CardUsageEffectContext } from './index';
 export const useCardUsageEffect = () => {
   const context = useContext(CardUsageEffectContext);
 
-  // SSRガード（ビルド時の爆発防止）
-  if (typeof window === 'undefined' || !context) {
+  // ✅ 徹底的なSSRガード
+  if (typeof window === 'undefined' || context === undefined) {
     return {
       activeCardIds: [],
       addCardUsage: () => {},
