@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { Tooltip } from 'react-tooltip';
-// 1. type を追加して型専用インポートに修正
 import type { UseFormRegisterReturn } from 'react-hook-form';
 
 interface NumberInputProps {
@@ -25,10 +24,10 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   const [value, setValue] = useState<string | number>(defaultValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 2. e.target を HTMLInputElement として扱うように修正
+  // 修正：target を any にキャストすることで、環境設定に関わらず value の読み取りを許可します
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const target = e.target as HTMLInputElement;
-    setValue(target.value);
+    const target = e.target;
+    setValue((target as any).value);
   };
 
   return (
