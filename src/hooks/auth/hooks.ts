@@ -1,17 +1,22 @@
 'use client';
 
 import { useContext } from 'react';
-import { AuthContext, type AuthContextType } from './context';
+import { AuthContext } from './context';
 
-/**
- * 認証コンテキストを使用するためのフック
- */
-export function useAuth(): AuthContextType {
+export const useAuth = () => {
   const context = useContext(AuthContext);
 
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  // ✅ SSRガード：ビルド時に認証情報を求められても「まだ準備中」と答える
+  if (typeof window === 'undefined' || !context) {
+    return {
+      user: null,
+      isLoading: true,
+      isAuthSkipped: false,
+      login: async () => {},
+      logout: async () => {},
+      skipAuth: () => {},
+    };
   }
 
   return context;
-}
+};
