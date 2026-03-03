@@ -1,11 +1,19 @@
 import { RoomCreator } from '@/feature/RoomCreator';
 import { RoomEntrance } from '@/feature/RoomEntrance';
-import { EntranceMenu } from '@/feature/EntranceMenu';
+// ❌ 普通のインポートをやめる
+// import { EntranceMenu } from '@/feature/EntranceMenu';
 import { Matching } from '@/feature/Matching';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getMyProfile } from '@/actions/profile';
-import { redirect } from 'next/navigation'; // 正しいインポートに戻します
+import { redirect } from 'next/navigation';
+import dynamic from 'next/dynamic'; // ← これを追加
+
+// ✅ EntranceMenu を「ブラウザ専用」として読み込む
+const EntranceMenu = dynamic(
+  () => import('@/feature/EntranceMenu').then((mod) => mod.EntranceMenu),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   title: 'Entrance',
@@ -27,7 +35,10 @@ export default async function Page() {
         >
           デッキ編集
         </Link>
+        
+        {/* ブラウザでしか動かない EntranceMenu */}
         <EntranceMenu />
+
         {process.env.DISABLE_AUTH !== 'true' && <Matching />}
         {process.env.DISABLE_ROOM_CREATION === 'true' ? (
           <div className="max-w-lg mx-auto text-center p-3 my-3 bg-red-900 border border-red-600 rounded-md">
@@ -35,12 +46,6 @@ export default async function Page() {
               現在公式サーバ上ではルーム作成機能を提供しておりません
               <br />
               ランダムマッチングをお楽しみください
-              <br />
-              <span className="text-[10px] text-red-100">
-                公開されているソースコードを利用して個人サーバを建てることで
-                <br />
-                引き続きルーム作成機能を利用することが出来ます
-              </span>
             </p>
           </div>
         ) : (
