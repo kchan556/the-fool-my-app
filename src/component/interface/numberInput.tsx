@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Tooltip } from 'react-tooltip';
-import { UseFormRegisterReturn } from 'react-hook-form';
+import type{ UseFormRegisterReturn } from 'react-hook-form';
 
 interface NumberInputProps {
   label: string;
