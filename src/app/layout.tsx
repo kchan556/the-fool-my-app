@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-// まとめてインポートするのではなく、直接ファイルを指定します
-import { GlobalContextProvider } from '@/hooks/GlobalContextProvider';
 import { AuthProvider } from '@/hooks/auth';
 import { DeckProvider } from '@/hooks/deck';
 import { Analytics } from '@vercel/analytics/next';
+import dynamic from 'next/dynamic'; // ← これを追加
+
+// サーバーで動かさないように「予約」する書き方です
+const GlobalContextProvider = dynamic(
+  () => import('@/hooks/GlobalContextProvider').then((mod) => mod.GlobalContextProvider),
+  { ssr: false }
+);
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -44,6 +49,7 @@ export default function RootLayout({
         <Analytics />
         <AuthProvider authSkip={authSkip}>
           <DeckProvider>
+            {/* ここで使われる GlobalContextProvider は、ブラウザでしか動かない設定になります */}
             <GlobalContextProvider>{children}</GlobalContextProvider>
           </DeckProvider>
         </AuthProvider>
