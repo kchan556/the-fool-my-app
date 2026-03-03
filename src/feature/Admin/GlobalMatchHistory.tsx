@@ -46,20 +46,20 @@ function PlayerCell({
     <div className="flex items-center gap-2">
       <WinnerBadge playerIndex={playerIndex} winnerIndex={winnerIndex} />
       {firstPlayerIndex === playerIndex && (
-        <span className="text-xs font-medium text-blue-600">允E/span>
+        <span className="text-xs font-medium text-blue-600">先攻</span>
       )}
       {firstPlayerIndex !== null && firstPlayerIndex !== playerIndex && (
-        <span className="text-xs font-medium text-red-600">征E/span>
+        <span className="text-xs font-medium text-red-600">後攻</span>
       )}
       {player.id ? (
         <Link
           href={`/admin/users/${player.id}`}
           className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
         >
-          {player.name || '不�E'}
+          {player.name || '不明'}
         </Link>
       ) : (
-        <span className="text-sm text-gray-900">{player.name || '不�E'}</span>
+        <span className="text-sm text-gray-900">{player.name || '不明'}</span>
       )}
     </div>
   );
@@ -93,7 +93,7 @@ export function GlobalMatchHistory({
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    日晁E
+                    日時
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">
                     種別
@@ -105,13 +105,13 @@ export function GlobalMatchHistory({
                     プレイヤー1
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
-                    チE��キ
+                    デッキ
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     プレイヤー2
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
-                    チE��キ
+                    デッキ
                   </th>
                 </tr>
               </thead>
@@ -127,53 +127,3 @@ export function GlobalMatchHistory({
                               day: 'numeric',
                               hour: '2-digit',
                               minute: '2-digit',
-                            }
-                          )
-                        : '-'}
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      {match.matching_mode ? (
-                        <span className="text-xs text-gray-600">{match.matching_mode}</span>
-                      ) : (
-                        <span className="text-gray-400 text-xs">-</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className="text-sm text-gray-600">{match.total_rounds ?? '-'}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <PlayerCell
-                        player={match.player1}
-                        playerIndex={0}
-                        winnerIndex={match.winner_index}
-                        firstPlayerIndex={match.first_player_index}
-                      />
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <DeckFullPreview deck={match.player1.deck} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <PlayerCell
-                        player={match.player2}
-                        playerIndex={1}
-                        winnerIndex={match.winner_index}
-                        firstPlayerIndex={match.first_player_index}
-                      />
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <DeckFullPreview deck={match.player2.deck} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <Pagination basePath={basePath} currentPage={currentPage} totalPages={totalPages} />
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
