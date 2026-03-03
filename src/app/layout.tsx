@@ -35,7 +35,11 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Analytics />
-        <AuthProvider authSkip={authSkip}>
+        {(AuthProvider as any)({ children: (
+  <DeckProvider>
+    <ClientProvider>{children}</ClientProvider>
+  </DeckProvider>
+), authSkip })}
           <DeckProvider>
             {/* dynamic import を閉じ込めた ClientProvider で包む */}
             <ClientProvider>{children}</ClientProvider>
