@@ -3,7 +3,7 @@
 import React from 'react';
 import { Tooltip } from 'react-tooltip';
 import keywordsData from '../../submodule/suit/catalog/keywords.json';
-// 修正： type を追加して型専用インポートにします
+// 修正ポイント： "type" を追加。これで verbatimModuleSyntax をパスします。
 import type { IDelta } from '@/submodule/suit/types';
 
 interface BattleIconsViewProps {
@@ -11,13 +11,12 @@ interface BattleIconsViewProps {
 }
 
 export const BattleIconsView = ({ delta }: BattleIconsViewProps) => {
-  // ツールチップのデータ取得用ヘルパー
+  if (!delta || delta.length === 0) return null;
+
   const getKeywordDesc = (type: string) => {
     const data = (keywordsData as any)[type];
     return data ? `${data.name}: ${data.description}` : type;
   };
-
-  if (!delta || delta.length === 0) return null;
 
   return (
     <div className="flex flex-wrap gap-1">
@@ -31,7 +30,7 @@ export const BattleIconsView = ({ delta }: BattleIconsViewProps) => {
           {d.type?.[0]?.toUpperCase() || '?'}
         </div>
       ))}
-      <Tooltip id="battle-icon-tooltip" style={{ fontSize: '12px', zIndex: 50 }} />
+      <Tooltip id="battle-icon-tooltip" />
     </div>
   );
 };
