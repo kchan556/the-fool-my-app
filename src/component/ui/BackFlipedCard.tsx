@@ -1,31 +1,22 @@
 import master from "@/submodule/suit/catalog/catalog";
-import { IAtom, ICard } from "@/submodule/suit/types";
+// 修正：型インポートであることを明示するために "type" を追加します
+import type { IAtom, ICard } from "@/submodule/suit/types";
 
 export const BackFlipedCard = ({
   card,
+  atom,
 }: {
-  card: ICard | (IAtom & { color: string });
+  card?: ICard;
+  atom?: IAtom;
 }) => {
-  const colors = {
-    1: "red",
-    2: "yellow",
-    3: "blue",
-    4: "green",
-    5: "purple",
-  };
-
-  const isAtom = "color" in card;
-  const color = isAtom
-    ? card.color
-    : colors[master.get(card.catalogId)?.color as keyof typeof colors];
+  // 共通のスタイル
+  const baseStyle = "w-24 h-36 rounded-lg border-2 border-white shadow-lg flex items-center justify-center bg-indigo-900";
 
   return (
-    <div
-      className="w-19 h-26 border-1 border-white rounded-sm bg-gray-800"
-      style={{
-        backgroundImage: `url('/image/card/back/${color}.png')`,
-        backgroundSize: "cover",
-      }}
-    />
+    <div className={baseStyle}>
+      <div className="w-20 h-32 border border-white/20 rounded flex items-center justify-center">
+        <span className="text-4xl text-white/10 font-bold">?</span>
+      </div>
+    </div>
   );
 };
