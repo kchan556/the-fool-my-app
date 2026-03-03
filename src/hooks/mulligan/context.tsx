@@ -1,73 +1,53 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useState, useRef, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
 
-interface MulliganContextType {
-  showMulligan: boolean;
-  setShowMulligan: (show: boolean) => void;
-  timeLeft: number;
-  setOnTimeout: (callback: (() => void) | null) => void;
-  // Timer state - do not modify directly
-  timerStartRef: React.MutableRefObject<number | null>;
-  initialTimeRef: React.MutableRefObject<number>;
-  _setTimerRunning: React.Dispatch<React.SetStateAction<boolean>>;
+export interface MulliganContextType {
+  isMulliganPhase: boolean;
+  selectedIndices: number[];
+  toggleSelect: (index: number) => void;
+  startMulligan: () => void;
+  endMulligan: () => void;
+  resetMulligan: () => void;
 }
 
 const MulliganContext = createContext<MulliganContextType | undefined>(undefined);
 
 export const MulliganProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [showMulligan, setShowMulligan] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(10);
-  const timerStartRef = useRef<number | null>(null); // null when timer not running
-  const initialTimeRef = useRef<number>(10); // Initial time value in seconds
-  const [timerRunning, setTimerRunning] = useState(false); // We'll use this state to trigger effect
-  const onTimeoutRef = useRef<(() => void) | null>(null);
-  const timeoutFiredRef = useRef(false);
+  const [isMulliganPhase, setIsMulliganPhase] = useState(false);
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
-  const setOnTimeout = (callback: (() => void) | null) => {
-    onTimeoutRef.current = callback;
-    timeoutFiredRef.current = false;
-  };
+  const startMulligan = useCallback(() => {
+    setIsMulliganPhase(true);
+    setSelectedIndices([]);
+  }, []);
 
-  // Global timer that runs continuously in the background
-  useEffect(() => {
-    if (timerStartRef.current === null || !timerRunning) return;
+  const endMulligan = useCallback(() => {
+    setIsMulliganPhase(false);
+  }, []);
 
-    const intervalId = setInterval(() => {
-      if (timerStartRef.current === null) {
-        clearInterval(intervalId);
-        return;
-      }
-      const elapsedSeconds = (Date.now() - timerStartRef.current) / 1000;
-      const newTimeLeft = Math.max(initialTimeRef.current - elapsedSeconds, 0);
+  const toggleSelect = useCallback((index: number) => {
+    setSelectedIndices(prev =>
+      prev.includes(index)
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  }, []);
 
-      setTimeLeft(parseFloat(newTimeLeft.toFixed(2)));
-
-      if (newTimeLeft <= 0) {
-        clearInterval(intervalId);
-        setTimerRunning(false);
-        timerStartRef.current = null;
-        // タイムアウトコールバックを実行（二重発火防止�E�E
-        if (onTimeoutRef.current && !timeoutFiredRef.current) {
-          timeoutFiredRef.current = true;
-          onTimeoutRef.current();
-        }
-      }
-    }, 10); // 10ms for smooth updates
-
-    return () => clearInterval(intervalId);
-  }, [timerRunning]);
+  const resetMulligan = useCallback(() => {
+    setIsMulliganPhase(false);
+    setSelectedIndices([]);
+  }, []);
 
   return (
     <MulliganContext.Provider
       value={{
-        showMulligan,
-        setShowMulligan,
-        timeLeft,
-        setOnTimeout,
-        timerStartRef,
-        initialTimeRef,
-        _setTimerRunning: setTimerRunning,
+        isMulliganPhase,
+        selectedIndices,
+        toggleSelect,
+        startMulligan,
+        endMulligan,
+        resetMulligan,
       }}
     >
       {children}
@@ -75,35 +55,23 @@ export const MulliganProvider: React.FC<{ children: ReactNode }> = ({ children }
   );
 };
 
-export const useMulligan = (): MulliganContextType => {
+export const useMulligan = () => {
   const context = useContext(MulliganContext);
+
+  // ✅ サーバーサイド（ビルド時）で呼ばれた場合にエラーにならないようガードを入れる
+  if (typeof window === 'undefined') {
+    return {
+      isMulliganPhase: false,
+      selectedIndices: [],
+      toggleSelect: () => {},
+      startMulligan: () => {},
+      endMulligan: () => {},
+      resetMulligan: () => {},
+    };
+  }
+
   if (context === undefined) {
     throw new Error('useMulligan must be used within a MulliganProvider');
   }
   return context;
-};
-
-// Helper functions to manipulate the timer
-export const useTimer = () => {
-  const { timerStartRef, initialTimeRef, _setTimerRunning } = useMulligan();
-
-  // Start a new timer with the given duration
-  const startTimer = (duration: number = 10) => {
-    initialTimeRef.current = duration;
-    timerStartRef.current = Date.now();
-    _setTimerRunning(true); // Trigger the effect
-  };
-
-  // Stop the timer
-  const stopTimer = () => {
-    timerStartRef.current = null;
-    _setTimerRunning(false);
-  };
-
-  // Check if timer is already running
-  const isTimerRunning = () => {
-    return timerStartRef.current !== null;
-  };
-
-  return { startTimer, stopTimer, isTimerRunning };
 };
