@@ -1,205 +1,22 @@
 'use client';
 
-import { createContext, useCallback, useEffect, useMemo, useState, useContext, type ReactNode } from 'react';
-import { useAuth } from '@/hooks/auth';
-import { DeckService } from '@/service/deck-service';
-import { setDeckPublic as setDeckPublicAction } from '@/actions/deck';
-import type { DeckData } from '@/type/deck';
+import React, { createContext, useContext, ReactNode } from 'react';
 
-export type DeckContextType = {
-  decks: DeckData[];
-  mainDeck: DeckData | null;
-  isLoading: boolean;
-  error: string | null;
-  
-  refreshDecks: () => Promise<void>;
-  saveDeck: (
-    title: string,
-    cards: string[],
-    jokers?: string[],
-    isMain?: boolean
-  ) => Promise<DeckData>;
-  deleteDeck: (deckId: string) => Promise<void>;
-  setMainDeck: (deckId: string) => Promise<void>;
-  setDeckPublic: (deckId: string, isPublic: boolean) => Promise<void>;
-  
-  migrateFromLocalStorage: () => Promise<{ success: number; failed: number }>;
-  clearLocalStorage: () => void;
-  hasLocalDecks: boolean;
-};
+export const DeckContext = createContext<any>(undefined);
 
-export const DeckContext = createContext<DeckContextType | undefined>(undefined);
-
-type DeckProviderProps = {
-  children: ReactNode;
-};
-
-export const DeckProvider = ({ children }: DeckProviderProps) => {
-  const { user, isAuthSkipped, isLoading: isAuthLoading } = useAuth();
-  const [decks, setDecks] = useState<DeckData[]>([]);
-  const [mainDeck, setMainDeckState] = useState<DeckData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [hasLocalDecks, setHasLocalDecks] = useState(false);
-
-  const userId = !isAuthSkipped ? (user?.id ?? null) : null;
-
-  const refreshDecks = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const [allDecks, main] = await Promise.all([
-        DeckService.getAllDecks(userId),
-        DeckService.getMainDeck(userId),
-      ]);
-
-      setDecks(allDecks);
-      setMainDeckState(main);
-
-      if (userId && !isAuthSkipped) {
-        const { LocalStorageHelper } = await import('@/service/local-storage');
-        const localDecks = LocalStorageHelper.getAllDecks();
-        setHasLocalDecks(localDecks.length > 0);
-      } else {
-        setHasLocalDecks(false);
-      }
-    } catch (err) {
-      console.error('Deck loading error:', err);
-      setError('デッキの読み込みに失敗しました');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId, isAuthSkipped]);
-
-  useEffect(() => {
-    if (!isAuthLoading) {
-      refreshDecks();
-    }
-  }, [isAuthLoading, refreshDecks]);
-
-  const saveDeck = useCallback(
-    async (
-      title: string,
-      cards: string[],
-      jokers: string[] = [],
-      isMain: boolean = false
-    ): Promise<DeckData> => {
-      const saved = await DeckService.saveDeck(
-        isAuthSkipped ? null : userId,
-        title,
-        cards,
-        jokers,
-        isMain
-      );
-      await refreshDecks();
-      return saved;
-    },
-    [userId, isAuthSkipped, refreshDecks]
+export const DeckProvider = ({ children }: { children: ReactNode }) => {
+  return (
+    <DeckContext.Provider value={{ deck: [] }}>
+      {children}
+    </DeckContext.Provider>
   );
-
-  const deleteDeck = useCallback(
-    async (deckId: string): Promise<void> => {
-      await DeckService.deleteDeck(userId, deckId);
-      await refreshDecks();
-    },
-    [userId, refreshDecks]
-  );
-
-  const setMainDeck = useCallback(
-    async (deckId: string): Promise<void> => {
-      await DeckService.setMainDeck(userId, deckId);
-      await refreshDecks();
-    },
-    [userId, refreshDecks]
-  );
-
-  const setDeckPublicState = useCallback(
-    async (deckId: string, isPublic: boolean): Promise<void> => {
-      const result = await setDeckPublicAction(deckId, isPublic);
-      if (!result) {
-        throw new Error('Failed to toggle public status');
-      }
-      await refreshDecks();
-    },
-    [refreshDecks]
-  );
-
-  const migrateFromLocalStorage = useCallback(async (): Promise<{
-    success: number;
-    failed: number;
-  }> => {
-    if (!userId) {
-      throw new Error('Login required');
-    }
-
-    const result = await DeckService.migrateFromLocalStorage(userId);
-    await refreshDecks();
-    return result;
-  }, [userId, refreshDecks]);
-
-  const clearLocalStorage = useCallback(() => {
-    DeckService.clearLocalStorage();
-    setHasLocalDecks(false);
-  }, []);
-
-  const value = useMemo(
-    () => ({
-      decks,
-      mainDeck,
-      isLoading: isLoading || isAuthLoading,
-      error,
-      refreshDecks,
-      saveDeck,
-      deleteDeck,
-      setMainDeck,
-      setDeckPublic: setDeckPublicState,
-      migrateFromLocalStorage,
-      clearLocalStorage,
-      hasLocalDecks,
-    }),
-    [
-      decks,
-      mainDeck,
-      isLoading,
-      isAuthLoading,
-      error,
-      refreshDecks,
-      saveDeck,
-      deleteDeck,
-      setMainDeck,
-      setDeckPublicState,
-      migrateFromLocalStorage,
-      clearLocalStorage,
-      hasLocalDecks,
-    ]
-  );
-
-  return <DeckContext.Provider value={value}>{children}</DeckContext.Provider>;
 };
 
 export const useDeck = () => {
   const context = useContext(DeckContext);
-
+  // ✅ SSRガード
   if (typeof window === 'undefined') {
-    return {
-      decks: [],
-      mainDeck: null,
-      isLoading: true,
-      error: null,
-      refreshDecks: async () => {},
-      saveDeck: async () => ({}) as any,
-      deleteDeck: async () => {},
-      setMainDeck: async () => {},
-      setDeckPublic: async () => {},
-      migrateFromLocalStorage: async () => ({ success: 0, failed: 0 }),
-      clearLocalStorage: () => {},
-      hasLocalDecks: false,
-    };
-  }
-
-  if (context === undefined) {
-    throw new Error('useDeck must be used within a DeckProvider');
+    return { deck: [], addCard: () => {} };
   }
   return context;
 };
