@@ -169,3 +169,31 @@ export const DeckProvider = ({ children }: DeckProviderProps) => {
       decks,
       mainDeck,
       isLoading
+      import { useContext } from 'react'; // ファイルの上のほうに import がなければ追加してください
+
+export const useDeck = () => {
+  const context = useContext(DeckContext);
+
+  // ✅ サーバーサイド（Vercelのビルド中）はダミーの値を返してエラーを防ぐ
+  if (typeof window === 'undefined') {
+    return {
+      decks: [],
+      mainDeck: null,
+      isLoading: true,
+      error: null,
+      refreshDecks: async () => {},
+      saveDeck: async () => ({}) as any,
+      deleteDeck: async () => {},
+      setMainDeck: async () => {},
+      setDeckPublic: async () => {},
+      migrateFromLocalStorage: async () => ({ success: 0, failed: 0 }),
+      clearLocalStorage: () => {},
+      hasLocalDecks: false,
+    };
+  }
+
+  if (context === undefined) {
+    throw new Error('useDeck must be used within a DeckProvider');
+  }
+  return context;
+};
