@@ -1,17 +1,17 @@
-import { getProfile, getMatchHistory } from '@/actions/profile';
+// 1行目の getProfile を getMyProfile に修正（または実際の関数名に合わせる）
+import { getMyProfile, getMatchHistory } from '@/actions/profile'; 
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
-// --- 一時的なインライン・コンポーネント ---
-// 外部の MatchHistory が型エラーを起こすため、ここで安全なものを定義します
+// --- SafeMatchHistory の定義はそのまま ---
 const SafeMatchHistory = ({ matches, total }: any) => (
   <div className="mt-8 bg-gray-900 rounded-xl p-6 border border-gray-800">
     <h2 className="text-xl font-bold text-white mb-4">対戦履歴 ({total})</h2>
-    {matches.length === 0 ? (
+    {matches && matches.length === 0 ? (
       <p className="text-gray-500">対戦データがありません</p>
     ) : (
       <div className="space-y-3">
-        {matches.map((m: any) => (
+        {matches?.map((m: any) => (
           <div key={m.id} className="p-4 bg-gray-800 rounded-lg flex justify-between">
             <span>{new Date(m.created_at).toLocaleDateString()}</span>
             <span className={m.is_win ? "text-yellow-400" : "text-gray-400"}>
@@ -32,7 +32,8 @@ export default async function ProfilePage(props: {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
 
-  const profile = await getProfile(id);
+  // 関数名を getMyProfile に修正
+  const profile = await getMyProfile(id); 
   if (!profile) notFound();
 
   const matchData = await getMatchHistory(id, page);
@@ -45,9 +46,8 @@ export default async function ProfilePage(props: {
           <p className="text-gray-400">@{profile.discord_username}</p>
         </div>
 
-        {/* 外部コンポーネントの代わりに、上で定義した安全なものを使います */}
         <Suspense fallback={<div className="text-white mt-8">Loading history...</div>}>
-          <SafeMatchHistory matches={matchData.matches} total={matchData.total} />
+          <SafeMatchHistory matches={matchData?.matches || []} total={matchData?.total || 0} />
         </Suspense>
       </div>
     </div>
