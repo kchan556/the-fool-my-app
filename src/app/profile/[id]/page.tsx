@@ -1,17 +1,17 @@
-// 1行目の getProfile を getMyProfile に修正（または実際の関数名に合わせる）
-import { getMyProfile, getMatchHistory } from '@/actions/profile'; 
+// インポート名を Vercel の指示通り getMyProfile と getMyMatches に修正
+import { getMyProfile, getMyMatches } from '@/actions/profile'; 
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
-// --- SafeMatchHistory の定義はそのまま ---
+// --- SafeMatchHistory ---
 const SafeMatchHistory = ({ matches, total }: any) => (
   <div className="mt-8 bg-gray-900 rounded-xl p-6 border border-gray-800">
     <h2 className="text-xl font-bold text-white mb-4">対戦履歴 ({total})</h2>
-    {matches && matches.length === 0 ? (
+    {!matches || matches.length === 0 ? (
       <p className="text-gray-500">対戦データがありません</p>
     ) : (
       <div className="space-y-3">
-        {matches?.map((m: any) => (
+        {matches.map((m: any) => (
           <div key={m.id} className="p-4 bg-gray-800 rounded-lg flex justify-between">
             <span>{new Date(m.created_at).toLocaleDateString()}</span>
             <span className={m.is_win ? "text-yellow-400" : "text-gray-400"}>
@@ -32,11 +32,12 @@ export default async function ProfilePage(props: {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
 
-  // 関数名を getMyProfile に修正
+  // 関数名を修正
   const profile = await getMyProfile(id); 
   if (!profile) notFound();
 
-  const matchData = await getMatchHistory(id, page);
+  // 関数名を修正
+  const matchData = await getMyMatches(id, page);
 
   return (
     <div className="min-h-screen bg-gray-950 p-6">
