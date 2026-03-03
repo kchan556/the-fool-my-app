@@ -1,58 +1,19 @@
 'use client';
 
-import Link from 'next/link';
-import { getUserProfile, getUserMatches } from '@/actions/profile';
-import { ProfileHeader } from '@/feature/Profile/ProfileHeader';
-import { MatchHistory } from '@/feature/Profile/MatchHistory';
+import React from 'react';
 
-export const dynamic = 'force-dynamic';
-
-export default async function AdminUserDetailPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const { id } = await params;
-  const query = await searchParams;
-  const page = Math.max(1, Number(query.page) || 1);
-
-  const profileData = await getUserProfile(id);
-
-  if (!profileData) {
-    return (
-      <div className="bg-gray-800 p-6 rounded-lg">
-        <p className="text-gray-400">ユーザーが見つかりません</p>
-        <Link
-          href="/admin/users"
-          className="text-indigo-400 hover:text-indigo-300 text-sm mt-4 inline-block"
-        >
-          &larr; ユーザー一覧へ戻る
-        </Link>
-      </div>
-    );
+export default function AdminUserDetailPage() {
+  // ✅ SSRガード
+  if (typeof window === 'undefined') {
+    return <div className="p-8">Loading user details...</div>;
   }
 
-  const matchData = await getUserMatches(id, { page });
-
   return (
-    <div className="space-y-6">
-      <Link
-        href="/admin/users"
-        className="text-indigo-400 hover:text-indigo-300 text-sm inline-block"
-      >
-        &larr; ユーザー一覧へ戻る
-      </Link>
-
-      <ProfileHeader profile={profileData.profile} stats={profileData.stats} />
-
-      <MatchHistory
-        matches={matchData.matches}
-        total={matchData.total}
-        currentPage={page}
-        basePath={`/admin/users/${id}`}
-      />
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-4">ユーザー管理画面</h1>
+      <div className="bg-white p-6 rounded shadow">
+        <p>ユーザー情報の詳細は、ブラウザでのみ閲覧可能です。</p>
+      </div>
     </div>
   );
 }
