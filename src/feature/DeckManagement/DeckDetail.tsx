@@ -1,23 +1,24 @@
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
 
-// デッキ詳細コンポーネント
-// 不正な文字コードを排除し、SSRガードを入れた最小構成です。
-export const DeckDetail = () => {
-  // ✅ SSRガード
-  if (typeof window === 'undefined') {
-    return <div className="p-8">Loading Deck Details...</div>;
-  }
+// 1. Propsの型定義を追加
+interface DeckBuilderProps {
+  implementedIds: string[];
+  opMap: Record<string, number>;
+}
 
+// 2. Propsを受け取るように修正
+export const DeckBuilder = ({ implementedIds, opMap }: DeckBuilderProps) => {
+  // コンポーネントのロジック
   return (
-    <div className="p-8 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4">デッキ詳細</h2>
-      <div className="border-t pt-4">
-        <p className="text-gray-600">デッキの内容を表示中...</p>
+    <div className="p-4 bg-gray-900 text-white rounded-lg">
+      <h2 className="text-xl font-bold mb-4">デッキビルダー</h2>
+      <p className="text-sm text-gray-400">実装済みカード: {implementedIds.length}種類</p>
+      {/* 既存のビルダーUI */}
+      <div className="mt-4 border border-gray-700 p-6 rounded text-center">
+        デッキ構築エリア
       </div>
     </div>
   );
 };
-
-export default DeckDetail;
