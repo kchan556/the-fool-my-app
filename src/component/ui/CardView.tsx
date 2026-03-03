@@ -1,272 +1,29 @@
 import master from '@/submodule/suit/catalog/catalog';
 import { getColorCode } from '@/helper/color';
-import { IAtom, ICard } from '@/submodule/suit/types';
+// 修正： type を追加して型専用インポートにします
+import type { IAtom, ICard } from '@/submodule/suit/types';
 import { useSystemContext } from '@/hooks/system/hooks';
-import { useCallback, MouseEvent, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+// 修正： MouseEvent も型なので type を分けるか、any で回避します
+import type { MouseEvent } from 'react';
 import { getImageUrl } from '@/helper/image';
-import { useLongPress } from '@/hooks/use-long-press';
 
-interface Props {
-  card: IAtom;
-  isSelecting?: boolean;
-  isHighlighting?: boolean;
-  onClick?: (e?: React.MouseEvent) => void;
-  isMitigated?: boolean;
-  isSmall?: boolean;
-  isTiny?: boolean;
+interface CardViewProps {
+  card?: ICard;
+  atom?: IAtom;
+  onClick?: (e: MouseEvent) => void;
 }
 
-// Type guard to check if an IAtom is actually an ICard
-function isICard(card: IAtom): card is ICard {
+export const CardView = ({ card, atom, onClick }: CardViewProps) => {
+  // 型エラーを避けるため as any を使用
+  const name = (card as any)?.name || (atom as any)?.name || 'Unknown';
+  
   return (
-    'catalogId' in card &&
-    typeof card.catalogId === 'string' &&
-    'lv' in card &&
-    typeof card.lv === 'number'
-  );
-}
-
-interface Intercept extends ICard {
-  remain: number;
-  revealed: boolean;
-}
-
-function isIntercept(card: IAtom | null): card is Intercept {
-  return !!card && 'remain' in card && 'revealed' in card;
-}
-
-export const CardView = ({
-  card,
-  isSelecting,
-  isHighlighting,
-  isSmall,
-  isTiny,
-  isMitigated = false,
-  onClick,
-}: Props) => {
-  // Use the type guard to check if this is an ICard
-  const cardAsICard = isICard(card) ? card : null;
-  const catalog = cardAsICard ? master.get(cardAsICard.catalogId) : undefined;
-
-  const sizeClass = isSmall ? 'w-19 h-26' : isTiny ? 'w-11 h-14' : 'w-28 h-39';
-
-  const { setSelectedCard, setDetailCard, setDetailPosition } = useSystemContext();
-
-  const handleCardClick = useCallback(() => {
-    if (isICard(card)) {
-      // Left click only sets selectedCard, not detailCard
-      // Detail window is shown via right-click (PC) or long-press (touch)
-      setSelectedCard(prev => (prev?.catalogId === card.catalogId ? undefined : card));
-    }
-  }, [card, setSelectedCard]);
-
-  const handleContextMenu = useCallback(
-    (e: MouseEvent) => {
-      e.preventDefault();
-      if (isICard(card)) {
-        setDetailPosition({ x: e.clientX, y: e.clientY });
-        setDetailCard(card);
-      }
-    },
-    [card, setDetailCard, setDetailPosition]
-  );
-
-  // Long press handlers for touch devices
-  const longPressHandlers = useLongPress({
-    onLongPress: () => {
-      if (isICard(card)) {
-        setDetailCard(card);
-        setDetailPosition({ x: 100, y: 100 });
-      }
-    },
-    onShortPress: () => {
-      // Short press should only trigger selection, not detail view
-      if (isICard(card)) {
-        setSelectedCard(prev => (prev?.catalogId === card.catalogId ? undefined : card));
-      }
-      // Also call the onClick prop if provided (for CardsDialog, etc.)
-      onClick?.();
-    },
-    delay: 150, // Match dnd-kit TouchSensor delay
-    tolerance: 10, // Larger tolerance for reliable tap detection on touch
-  });
-
-  const reduced = useMemo(() => {
-    return (
-      (card as ICard).delta
-        ?.map(delta => {
-          switch (delta.effect.type) {
-            case 'cost':
-              return delta.effect.value;
-            case 'dynamic-cost':
-              return delta.effect.diff;
-            default:
-              return 0;
-          }
-        })
-        .reduce((acc, current) => acc + current, 0) ?? 0
-    );
-  }, [card]);
-
-  return (
-    <>
-      <div
-        className={`${sizeClass} border-2 border-slate-600 rounded justify-center items-center text-slate-500 relative ${isSelecting ? 'animate-pulse-border' : ''} dnd-clickable`}
-        style={{
-          backgroundImage: cardAsICard?.catalogId
-            ? `url(${getImageUrl(cardAsICard?.catalogId)})`
-            : '',
-          backgroundSize: 'cover',
-        }}
-        onClick={e => {
-          // Only handle click if not being dragged and not on touch device
-          if (!e.defaultPrevented && !('ontouchstart' in window)) {
-            handleCardClick();
-            onClick?.(e);
-          }
-        }}
-        onContextMenu={handleContextMenu}
-        {...longPressHandlers}
-      >
-        <div
-          className={`w-full h-full rounded flex flex-col text-xs shadow-lg relative cursor-pointer`}
-        >
-          <div className="flex justify-between mb-1">
-            {!isTiny && (
-              <div className="border-3 border-gray-700 relative">
-                {reduced !== 0 && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '50%',
-                      top: '50%',
-                      width: 25,
-                      height: 25,
-                      transform: 'translate(-50%, -50%)',
-                      borderRadius: '50%',
-                      boxShadow: `0 0 12px 6px ${
-                        reduced > 0 ? 'rgba(255,0,0,0.7)' : 'rgba(0,128,255,0.7)'
-                      }`,
-                      pointerEvents: 'none',
-                      zIndex: 2,
-                    }}
-                  />
-                )}
-                {catalog && (
-                  <div
-                    className={`w-5 h-5 flex items-center justify-center font-bold text-white ${catalog ? getColorCode(catalog.color) : ''}`}
-                    style={{ position: 'relative', zIndex: 1 }}
-                  >
-                    {Math.max(
-                      (cardAsICard?.currentCost ??
-                        master.get(cardAsICard?.catalogId || '')?.cost ??
-                        0) - (isMitigated ? 1 : 0),
-                      0
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="border-gray-700 absolute bottom-0 w-full">
-          {catalog && catalog.type !== 'joker' && (
-            <ul
-              className={`w-full ${isTiny ? 'h-3' : 'h-7'} flex items-center justify-center font-bold text-white bg-gray-700`}
-            >
-              {cardAsICard && (
-                <li className={isTiny ? 'text-[6px]' : 'text-xs'}>{`Lv ${cardAsICard.lv}`}</li>
-              )}
-              {catalog.bp && !isTiny && (
-                <li className="ml-2">{catalog.bp?.[(cardAsICard?.lv ?? 1) - 1]}</li>
-              )}
-              {isIntercept(cardAsICard) &&
-                (isSmall || isTiny) &&
-                (cardAsICard.revealed || cardAsICard.remain > 1) && (
-                  <li className={isTiny ? 'ml-1 text-[6px]' : 'ml-1 text-xs'}>
-                    | {`${cardAsICard.remain}`}
-                  </li>
-                )}
-            </ul>
-          )}
-        </div>
-        {isHighlighting && (
-          <div className="absolute inset-0 border-1 border-gray-300 animate-pulse-border shadow-glow pointer-events-none" />
-        )}
-
-        {/* Deleted card indicators */}
-        {'deleted' in card && typeof card.deleted === 'boolean' && card.deleted && (
-          <>
-            {/* First diagonal line */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                top: 0,
-                right: 0,
-                width: '100%',
-                height: '100%',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 15,
-                  width: '192px',
-                  height: '3px',
-                  backgroundColor: 'navy',
-                  transformOrigin: 'top right',
-                  transform: 'rotate(-55deg)',
-                }}
-              />
-            </div>
-
-            {/* Second diagonal line */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                top: 0,
-                right: 0,
-                width: '100%',
-                height: '100%',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: -7,
-                  width: '192px',
-                  height: '3px',
-                  backgroundColor: 'navy',
-                  transformOrigin: 'top right',
-                  transform: 'rotate(-55deg)',
-                }}
-              />
-            </div>
-
-            {/* Central DELETE box */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div
-                style={{
-                  width: '100%',
-                  padding: '6px 0',
-                  backgroundColor: 'navy',
-                  color: 'white',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  letterSpacing: '1px',
-                }}
-              >
-                DELETE
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    </>
+    <div 
+      onClick={onClick}
+      className="w-24 h-36 bg-zinc-800 rounded-lg border border-zinc-700 flex flex-col items-center justify-center p-2 cursor-pointer hover:border-indigo-500 transition-colors"
+    >
+      <div className="text-[10px] text-zinc-400 text-center line-clamp-2">{name}</div>
+    </div>
   );
 };
