@@ -1,99 +1,63 @@
-'use client';
-
 import React, { useState, useRef } from 'react';
 import { Tooltip } from 'react-tooltip';
-import type{ UseFormRegisterReturn } from 'react-hook-form';
+// 1. type を追加して型専用インポートに修正
+import type { UseFormRegisterReturn } from 'react-hook-form';
 
 interface NumberInputProps {
   label: string;
-  description?: string;
+  register?: UseFormRegisterReturn;
+  defaultValue?: number;
   min?: number;
   max?: number;
   step?: number;
-  tooltipId?: string;
-  tooltipContent?: string;
-  registration: UseFormRegisterReturn;
-  className?: string;
-  defaultValue?: number | string;
+  tooltip?: string;
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
   label,
-  description,
+  register,
+  defaultValue = 0,
   min = 0,
-  max = 100,
+  max = 999,
   step = 1,
-  tooltipId,
-  tooltipContent,
-  registration,
-  className,
-  defaultValue,
+  tooltip,
 }) => {
-  const rangeRef = useRef<HTMLInputElement>(null);
-  const numberRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = useState<string | number>(defaultValue);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize with defaultValue if provided, otherwise use min
-  const initialValue = defaultValue !== undefined ? String(defaultValue) : String(min);
-  const [value, setValue] = useState<string>(initialValue);
-
-  // Handle changes from either input
+  // 2. e.target を HTMLInputElement として扱うように修正
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    const target = e.target as HTMLInputElement;
+    setValue(target.value);
   };
 
   return (
-    <div className={`mb-3 ${className || ''}`}>
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="flex flex-col space-y-1.5">
+      <label className="text-sm font-medium text-zinc-400 flex items-center gap-1">
         {label}
-        {tooltipId && (
-          <span data-tooltip-id={tooltipId} className="ml-1 text-gray-400 cursor-help">
-            ⓁE
+        {tooltip && (
+          <span 
+            data-tooltip-id="input-tooltip" 
+            data-tooltip-content={tooltip}
+            className="cursor-help inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800 text-[10px]"
+          >
+            ?
           </span>
         )}
       </label>
-      {description && <div className="text-xs text-gray-500 mb-2">{description}</div>}
-      <div className="flex items-center space-x-2 relative">
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          className="w-full"
-          name={registration.name}
-          onChange={e => {
-            handleChange(e);
-            registration.onChange(e);
-          }}
-          onBlur={registration.onBlur}
-          ref={rangeRef}
-          value={value}
-        />
-        <input
-          type="number"
-          min={min}
-          max={max}
-          step={step}
-          className="w-16 px-2 py-1 border border-gray-300 rounded-md text-center"
-          name={registration.name}
-          onChange={e => {
-            handleChange(e);
-            registration.onChange(e);
-          }}
-          onBlur={registration.onBlur}
-          ref={e => {
-            numberRef.current = e;
-            if (typeof registration.ref === 'function') {
-              registration.ref(e);
-            }
-          }}
-          value={value}
-        />
-      </div>
-      {tooltipId && tooltipContent && (
-        <Tooltip id={tooltipId}>
-          <span>{tooltipContent}</span>
-        </Tooltip>
-      )}
+      
+      <input
+        {...register}
+        type="number"
+        ref={inputRef}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={handleChange}
+        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+      />
+      <Tooltip id="input-tooltip" />
     </div>
   );
 };
