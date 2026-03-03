@@ -4,13 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/hooks/auth';
 import { DeckProvider } from '@/hooks/deck';
 import { Analytics } from '@vercel/analytics/next';
-import dynamic from 'next/dynamic'; // ← これを追加
-
-// サーバーで動かさないように「予約」する書き方です
-const GlobalContextProvider = dynamic(
-  () => import('@/hooks/GlobalContextProvider').then((mod) => mod.GlobalContextProvider),
-  { ssr: false }
-);
+import { ClientProvider } from '@/hooks/ClientProvider'; // 新しく作ったファイルを呼ぶ
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,12 +22,6 @@ export const metadata: Metadata = {
     absolute: 'Revolutions',
   },
   description: 'CODE OF JOKER Simulator',
-  keywords: [
-    'CODE OF JOKER',
-    'COJ',
-    'コードオブジョーカー',
-    'シミュレータ',
-  ],
 };
 
 export default function RootLayout({
@@ -49,8 +37,8 @@ export default function RootLayout({
         <Analytics />
         <AuthProvider authSkip={authSkip}>
           <DeckProvider>
-            {/* ここで使われる GlobalContextProvider は、ブラウザでしか動かない設定になります */}
-            <GlobalContextProvider>{children}</GlobalContextProvider>
+            {/* dynamic import を閉じ込めた ClientProvider で包む */}
+            <ClientProvider>{children}</ClientProvider>
           </DeckProvider>
         </AuthProvider>
       </body>
