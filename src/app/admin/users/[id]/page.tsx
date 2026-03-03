@@ -1,27 +1,37 @@
-'use client'; // 👈 これを追加してブラウザで動くことを明示します
+import { getUserById } from '@/actions/admin'; // ユーザー取得用のActionがあると仮定
+import { AdminNav } from '@/feature/Admin/AdminNav';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+export const dynamic = 'force-dynamic';
 
-export default function AdminUserDetailPage() {
-  const params = useParams();
-  const userId = params.id;
-  const [mounted, setMounted] = useState(false);
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
-  // マウント（ブラウザでの準備完了）を待つ
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="p-8 text-white">Loading user details...</div>;
-  }
+export default async function AdminUserDetailPage({ params }: Props) {
+  // サーバーサイドで安全にIDを取得
+  const { id } = await params;
 
   return (
-    <div className="p-8 text-white">
-      <h1 className="text-2xl font-bold mb-4">ユーザー詳細</h1>
-      <p className="text-gray-400">ユーザーID: {userId}</p>
-      {/* ここに詳細コンテンツ */}
+    <div className="min-h-screen bg-gray-900 p-6 text-white">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">ユーザー詳細</h1>
+        <AdminNav />
+        
+        <div className="mt-6 bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-lg font-semibold mb-4">基本情報</h2>
+          <dl className="grid grid-cols-1 gap-4">
+            <div>
+              <dt className="text-gray-400 text-sm">ユーザーID</dt>
+              <dd className="font-mono bg-gray-900 p-2 rounded mt-1">{id}</dd>
+            </div>
+            {/* ここに詳細なプロフィール情報を追加していく */}
+          </dl>
+          
+          <div className="mt-8 text-gray-500 text-sm">
+            ※ユーザーの詳細データ取得ロジックをここに実装してください。
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
