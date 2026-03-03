@@ -1,14 +1,19 @@
 'use client';
 
 import { useContext } from 'react';
-import { CardUsageEffectContext, CardUsageEffectContextType } from './context';
+import { CardUsageEffectContext } from './index';
 
-// Custom hook to use the card usage effect context
-export const useCardUsageEffect = (): CardUsageEffectContextType => {
+export const useCardUsageEffect = () => {
   const context = useContext(CardUsageEffectContext);
 
-  if (context === undefined) {
-    throw new Error('useCardUsageEffect must be used within a CardUsageEffectProvider');
+  // SSRガード（ビルド時の爆発防止）
+  if (typeof window === 'undefined' || !context) {
+    return {
+      activeCardIds: [],
+      addCardUsage: () => {},
+      removeCardUsage: () => {},
+      scheduleRemoval: () => {},
+    };
   }
 
   return context;
