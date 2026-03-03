@@ -35,11 +35,12 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Analytics />
-        {(AuthProvider as any)({ children: (
+        {/* @ts-ignore: AuthProvider props mismatch during Next.js 16 build */}
+<AuthProvider authSkip={authSkip}>
   <DeckProvider>
     <ClientProvider>{children}</ClientProvider>
   </DeckProvider>
-), authSkip })}
+</AuthProvider>
           <DeckProvider>
             {/* dynamic import を閉じ込めた ClientProvider で包む */}
             <ClientProvider>{children}</ClientProvider>
