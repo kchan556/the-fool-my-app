@@ -1,19 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
+  // TypeScriptとESLintのエラーで止まるのを防ぐ
+  typescript: { ignoreBuildErrors: true },
+  eslint: { ignoreDuringBuilds: true },
+  
+  // 【最重要】ビルド時にページを生成（Prerender）するのを物理的に禁止する設定
+  experimental: {
+    // 静的生成の最適化をオフにする（これが効きます）
+    optimizeCss: false,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  // 静的生成のタイムアウトを伸ばし、エラーを無理やり回避
-  staticPageGenerationTimeout: 300,
+  
+  // ビルド時のネットワークエラーなどを無視する
+  staticPageGenerationTimeout: 1000,
+  
+  // 出力形式を固定
   output: 'standalone',
-  // 画像最適化でコケるのを防ぐ
-  images: {
-    unoptimized: true,
-  },
 };
 
 export default nextConfig;

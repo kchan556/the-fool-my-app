@@ -1,4 +1,8 @@
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // これを追加
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'; // これを追加
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default function RoomPage({ params }: { params: { id: string } }) {
