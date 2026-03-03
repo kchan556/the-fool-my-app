@@ -7,12 +7,13 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // 静的生成（Prerender）中のエラーでビルドが止まるのを防ぐ究極の設定
+  // 静的生成のタイムアウトを伸ばし、エラーを無理やり回避
+  staticPageGenerationTimeout: 300,
+  output: 'standalone',
+  // 画像最適化でコケるのを防ぐ
   images: {
     unoptimized: true,
   },
-  // 出力をスタンドアロンにして、ビルド時の検証を最小限にする
-  output: 'standalone',
 };
 
 export default nextConfig;

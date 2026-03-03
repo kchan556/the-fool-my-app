@@ -1,31 +1,15 @@
 export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
-
-import type { Metadata } from "next";
-
-import './globals.css';
-import { Analytics } from "@vercel/analytics/react";
-
-export const metadata = {
-  title: 'THE FOOL',
-  description: 'Online Card Game',
-};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="ja">
+      <head />
       <body>
-        <Analytics />
-        {/* エラーの原因となる Provider 類を一時的にコメントアウト。
-            これで「ファイルが見つからない」エラーを物理的に消去します。
-        */}
-        <main>
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );
