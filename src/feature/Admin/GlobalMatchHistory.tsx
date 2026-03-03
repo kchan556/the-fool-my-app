@@ -127,3 +127,53 @@ export function GlobalMatchHistory({
                               day: 'numeric',
                               hour: '2-digit',
                               minute: '2-digit',
+                            }
+                          )
+                        : '-'}
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      {match.matching_mode ? (
+                        <span className="text-xs text-gray-600">{match.matching_mode}</span>
+                      ) : (
+                        <span className="text-gray-400 text-xs">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      <span className="text-sm text-gray-600">{match.total_rounds ?? '-'}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <PlayerCell
+                        player={match.player1}
+                        playerIndex={0}
+                        winnerIndex={match.winner_index}
+                        firstPlayerIndex={match.first_player_index}
+                      />
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      <DeckFullPreview deck={match.player1.deck} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <PlayerCell
+                        player={match.player2}
+                        playerIndex={1}
+                        winnerIndex={match.winner_index}
+                        firstPlayerIndex={match.first_player_index}
+                      />
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      <DeckFullPreview deck={match.player2.deck} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <Pagination basePath={basePath} currentPage={currentPage} totalPages={totalPages} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
