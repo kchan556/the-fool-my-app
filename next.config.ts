@@ -1,15 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typescript: {
-    // 型エラーを無視してビルドを強行する
-    ignoreBuildErrors: true,
+  /* config options here */
+  // eslint キーを削除し、必要なオプション（images等）があればここに残す
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // 必要に応じて具体的なドメインに制限してください
+      },
+    ],
   },
-  eslint: {
-    // ESLintのエラーも無視してビルドを強行する
-    ignoreDuringBuilds: true,
-  },
-  /* 他の設定が必要ならここに追加 */
 };
 
 export default nextConfig;
