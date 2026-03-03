@@ -16,10 +16,12 @@ export default async function TicketsPage({
     <div className="space-y-6">
       <TicketCreateForm />
 
-      {/* チケチE��一覧 */}
+      {/* チケット一覧 */}
       <div className="bg-gray-800 p-6 rounded-lg">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">チケチE��一覧 ({result.total}件)</h2>
+          <h2 className="text-lg font-semibold text-white">
+            チケット一覧 ({result.total}件)
+          </h2>
           <TicketFilterToggle showUsed={showUsed} />
         </div>
 
