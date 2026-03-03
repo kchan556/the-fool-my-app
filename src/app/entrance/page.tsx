@@ -1,37 +1,23 @@
-'use client'; // ページ自体をクライアントコンポーネントにします
+'use client';
 
-import { RoomCreator } from '@/feature/RoomCreator';
-import { RoomEntrance } from '@/feature/RoomEntrance';
-import { Matching } from '@/feature/Matching';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import React from 'react';
+import RoomCreator from '@/feature/RoomCreator';
 
-// EntranceMenu は SSR を完全にオフにする
-const EntranceMenu = dynamic(
-  () => import('@/feature/EntranceMenu').then((mod) => mod.EntranceMenu),
-  { ssr: false }
-);
+export default function EntrancePage() {
+  // ✅ SSRガード
+  if (typeof window === 'undefined') {
+    return <div className="min-h-screen flex items-center justify-center">Loading Entrance...</div>;
+  }
 
-export default function Page() {
-  // サーバーサイド専用の metadata は 'use client' では使えないので削除しました
-  
   return (
-    <div className="space-y-4 m-4">
-      <Link
-        href={'/builder'}
-        className="inline-block px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-      >
-        デッキ編集
-      </Link>
-      
-      <EntranceMenu />
-
-      <Matching />
-      
-      <div className="space-y-8">
+    <main className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-md mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8">The Fool Online</h1>
         <RoomCreator />
-        <RoomEntrance />
+        <div className="mt-8 text-center text-sm text-gray-500">
+          対戦相手を待つか、新しい部屋を作成してください。
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
