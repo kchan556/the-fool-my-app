@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/hooks/auth';
-import { DeckProvider } from '@/hooks/deck';
+import { DeckProvider } from '@/hooks/deck/context';
 import { Analytics } from '@vercel/analytics/next';
 import { ClientProvider } from '@/hooks/ClientProvider'; // 新しく作ったファイルを呼ぶ
 
