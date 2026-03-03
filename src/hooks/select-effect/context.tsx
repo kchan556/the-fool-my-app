@@ -3,7 +3,7 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback, useRef } from 'react';
 
 export interface SelectEffectContextType {
-  targetUnitIds: string[]; // 褁E��ユニットが同時に選択エフェクト可能
+  targetUnitIds: string[]; // 複数ユニットが同時に選択エフェクト可能
   addTargetUnit: (unitId: string) => void;
   removeTargetUnit: (unitId: string) => void;
   scheduleRemoval: (unitId: string) => void;
@@ -14,7 +14,7 @@ const SelectEffectContext = createContext<SelectEffectContextType | undefined>(u
 
 export const SelectEffectProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [targetUnitIds, setTargetUnitIds] = useState<string[]>([]);
-  const cleanupTimeouts = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const cleanupTimeouts = useRef<Map<string, any>>(new Map());
 
   const addTargetUnit = useCallback((unitId: string) => {
     setTargetUnitIds(prev => {
@@ -27,8 +27,10 @@ export const SelectEffectProvider: React.FC<{ children: ReactNode }> = ({ childr
     setTargetUnitIds(prev => prev.filter(id => id !== unitId));
   }, []);
 
-  // 遁E��削除をスケジュール�E�Eeact Strict Mode対応！E
+  // 遅延削除をスケジュール
   const scheduleRemoval = useCallback((unitId: string) => {
+    if (typeof window === 'undefined') return; // サーバーガード
+    
     const existing = cleanupTimeouts.current.get(unitId);
     if (existing) clearTimeout(existing);
 
@@ -65,6 +67,18 @@ export const SelectEffectProvider: React.FC<{ children: ReactNode }> = ({ childr
 
 export const useSelectEffect = () => {
   const context = useContext(SelectEffectContext);
+
+  // ✅ ビルド時の SSR エラーを完全に防ぐためのガード
+  if (typeof window === 'undefined') {
+    return {
+      targetUnitIds: [],
+      addTargetUnit: () => {},
+      removeTargetUnit: () => {},
+      scheduleRemoval: () => {},
+      cancelScheduledRemoval: () => {},
+    };
+  }
+
   if (context === undefined) {
     throw new Error('useSelectEffect must be used within a SelectEffectProvider');
   }
