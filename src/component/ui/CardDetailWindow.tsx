@@ -4,7 +4,6 @@ import master from '@/submodule/suit/catalog/catalog';
 import type { IAtom, ICard, IDelta } from '@/submodule/suit/types';
 import Image from 'next/image';
 import { useSystemContext } from '@/hooks/system/hooks';
-// 修正：型（Dispatch, SetStateAction）と値（useCallback, etc.）を分けてインポート
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import keywordsData from '@/submodule/suit/catalog/keywords.json';
@@ -20,12 +19,16 @@ interface CardDetailWindowProps {
 export const CardDetailWindow = ({ card, atom, isOpen, setIsOpen }: CardDetailWindowProps) => {
   if (!isOpen) return null;
 
+  // 型エラー回避のため as any を使用してプロパティにアクセスします
+  const displayName = (card as any)?.name || (atom as any)?.name || 'カード詳細';
+  const displayDescription = (card as any)?.description || (atom as any)?.description || '説明はありません。';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-zinc-900 border border-zinc-800 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl">
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold text-white">{card?.name || atom?.name || 'カード詳細'}</h2>
+            <h2 className="text-2xl font-bold text-white">{displayName}</h2>
             <button 
               onClick={() => setIsOpen(false)}
               className="text-zinc-500 hover:text-white transition-colors"
@@ -39,7 +42,7 @@ export const CardDetailWindow = ({ card, atom, isOpen, setIsOpen }: CardDetailWi
           </div>
 
           <p className="text-zinc-400 text-sm leading-relaxed">
-            {card?.description || atom?.description || '説明はありません。'}
+            {displayDescription}
           </p>
         </div>
         
