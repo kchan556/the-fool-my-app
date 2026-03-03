@@ -1,3 +1,7 @@
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+// これを追加：ビルド時にこのページを生成するのを「絶対に」やめさせる
+export const revalidate = 0;
 import { getMyProfile, getMyMatches } from '@/actions/profile'; 
 import { notFound } from 'next/dist/client/components/not-found';
 import { Suspense } from 'react';

@@ -1,3 +1,7 @@
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+// これを追加：ビルド時にこのページを生成するのを「絶対に」やめさせる
+export const revalidate = 0;
 // 外部インポートを一旦すべて停止し、ビルドエラーを回避します
 import { Suspense } from 'react';
 

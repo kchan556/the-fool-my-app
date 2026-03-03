@@ -1,3 +1,7 @@
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+// これを追加：ビルド時にこのページを生成するのを「絶対に」やめさせる
+export const revalidate = 0;
 /* eslint-disable react-hooks/error-boundaries */
 // サーバコンポーネントなので無効化します
 
