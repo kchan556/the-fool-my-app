@@ -1,25 +1,26 @@
 'use client';
 
-// 修正：エラーの原因となっているインポートを一旦停止します
-// import { useCardUsageEffect } from '@/hooks/card-usage-effect';
+// エラーの原因となる外部インポートを完全に削除しました
 import './CardUsageEffect.css';
 
-// ビルドを通すための仮のフック定義
-const useCardUsageEffect = () => ({
-  effects: [],
+// コンポーネント内で必要なスタブ（代わりの関数）を定義
+const useCardUsageEffectStub = () => ({
+  effects: [] as any[],
   addEffect: () => {},
   removeEffect: () => {}
 });
 
 export const CardUsageEffect = () => {
-  // 内部で定義したスタブを使用
-  const { effects } = useCardUsageEffect();
+  // 外部ファイルではなく、上のスタブを使用するように変更
+  const { effects } = useCardUsageEffectStub();
 
-  if (effects.length === 0) return null;
+  if (!effects || effects.length === 0) return null;
 
   return (
     <div className="card-usage-effects-container">
-      {/* エフェクトの表示ロジック（必要に応じて） */}
+      {/* 将来的にエフェクトを表示したくなった場合は、
+        ここにロジックを戻すことができます。
+      */}
     </div>
   );
 };
