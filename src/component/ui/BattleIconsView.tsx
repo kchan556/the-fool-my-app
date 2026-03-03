@@ -11,6 +11,12 @@ interface BattleIconsViewProps {
 }
 
 export const BattleIconsView = ({ delta }: BattleIconsViewProps) => {
+  // ツールチップのデータ取得用ヘルパー
+  const getKeywordDesc = (type: string) => {
+    const data = (keywordsData as any)[type];
+    return data ? `${data.name}: ${data.description}` : type;
+  };
+
   if (!delta || delta.length === 0) return null;
 
   return (
@@ -18,14 +24,14 @@ export const BattleIconsView = ({ delta }: BattleIconsViewProps) => {
       {delta.map((d: any, i: number) => (
         <div 
           key={i}
-          className="w-6 h-6 rounded bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] text-white font-bold"
+          className="w-6 h-6 rounded bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] text-white font-bold cursor-help"
           data-tooltip-id="battle-icon-tooltip"
-          data-tooltip-content={`${d.type}: ${d.value}`}
+          data-tooltip-content={getKeywordDesc(d.type)}
         >
-          {d.type?.[0]?.toUpperCase()}
+          {d.type?.[0]?.toUpperCase() || '?'}
         </div>
       ))}
-      <Tooltip id="battle-icon-tooltip" />
+      <Tooltip id="battle-icon-tooltip" style={{ fontSize: '12px', zIndex: 50 }} />
     </div>
   );
 };
