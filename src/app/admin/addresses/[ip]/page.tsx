@@ -3,8 +3,7 @@ import { getUsersByIp } from '@/actions/admin';
 import { IpUserTable } from '@/feature/Admin/IpUserTable';
 import { Pagination } from '@/component/ui/Pagination';
 
-// 'use client'; は消しました（サーバーコンポーネントとして動作させます）
-
+// サーバーコンポーネントとして動作
 export const dynamic = 'force-dynamic';
 
 export default async function IpDetailPage(props: {
@@ -19,6 +18,11 @@ export default async function IpDetailPage(props: {
   const result = await getUsersByIp(ipAddress, { page });
   const totalPages = Math.ceil(result.total / 50);
 
+  // 1. 型エラーを解消するために、ネストされた profile を取り出して配列を整形
+  const usersForTable = result.users
+    .map((u) => u.profile)
+    .filter((p): p is NonNullable<typeof p> => !!p);
+
   return (
     <div className="space-y-6">
       <Link
@@ -29,16 +33,21 @@ export default async function IpDetailPage(props: {
       </Link>
 
       <div className="bg-gray-800 p-6 rounded-lg">
-        <h2 className="text-lg font-semibold text-white mb-1">
-          IPアドレス: <span className="font-mono">{ipAddress}</span>
-        </h2>
-        <p className="text-gray-400 text-sm mb-4">{result.total}人のユーザーが使用</p>
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-white">
+            IPアドレス: <span className="font-mono">{ipAddress}</span>
+          </h2>
+          <p className="text-gray-400 text-sm">{result.total}件のログが見つかりました</p>
+        </div>
 
-        {result.users.length === 0 ? (
-          <div className="text-gray-400">該当するユーザーがいません</div>
+        {usersForTable.length === 0 ? (
+          <div className="text-gray-400 py-8 text-center bg-gray-900/50 rounded border border-gray-700">
+            該当するユーザープロフィールが見つかりません
+          </div>
         ) : (
           <>
-            <IpUserTable users={result.users} />
+            {/* 2. 整形済みのデータを渡す */}
+            <IpUserTable users={usersForTable} />
             <Pagination
               basePath={`/admin/addresses/${encodeURIComponent(ipAddress)}`}
               currentPage={page}
