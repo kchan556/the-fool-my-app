@@ -1,144 +1,73 @@
 'use client';
 
-import { createContext, ReactNode, useReducer, useMemo } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback, useRef } from 'react';
 
-// Define the supported drive types
-export type DriveType = 'UNIT' | 'EVOLVE' | 'INTERCEPT' | 'TRIGGER' | 'JOKER';
-export type Position = 'left' | 'center' | 'right';
-export type Phase = 'phase1' | 'phase2' | 'phase3' | 'hidden';
-
-// Define the parameters for showing the effect
-export interface CardUsageEffectParams {
-  image: string;
-  type: DriveType;
-  position: Position;
+export interface CardUsageEffectContextType {
+  activeCardIds: string[];
+  addCardUsage: (cardId: string) => void;
+  removeCardUsage: (cardId: string) => void;
+  scheduleRemoval: (cardId: string) => void;
 }
 
-// Define the state interface for the card usage effect
-export interface CardUsageEffectState {
-  isVisible: boolean;
-  imageUrl: string;
-  type: DriveType;
-  position: Position;
-  phase: Phase;
-}
+const CardUsageEffectContext = createContext<CardUsageEffectContextType | undefined>(undefined);
 
-// Define the action types for the reducer
-export type CardUsageEffectAction =
-  | { type: 'SHOW_EFFECT'; params: CardUsageEffectParams }
-  | { type: 'SET_PHASE'; phase: Phase }
-  | { type: 'HIDE_EFFECT' };
+export const CardUsageEffectProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
+  const cleanupTimeouts = useRef<Map<string, any>>(new Map());
 
-// Define the context type
-export type CardUsageEffectContextType = {
-  state: CardUsageEffectState;
-  showCardUsageEffect: (params: CardUsageEffectParams) => Promise<void>;
-  hideCardUsageEffect: () => void;
-};
-
-// Create the context
-export const CardUsageEffectContext = createContext<CardUsageEffectContextType | undefined>(
-  undefined
-);
-
-// Initial state
-const initialState: CardUsageEffectState = {
-  isVisible: false,
-  imageUrl: '',
-  type: 'UNIT',
-  position: 'center',
-  phase: 'hidden',
-};
-
-// Reducer function
-function cardUsageEffectReducer(
-  state: CardUsageEffectState,
-  action: CardUsageEffectAction
-): CardUsageEffectState {
-  switch (action.type) {
-    case 'SHOW_EFFECT':
-      return {
-        ...state,
-        isVisible: true,
-        imageUrl: action.params.image,
-        type: action.params.type,
-        position: action.params.position,
-        phase: 'phase1',
-      };
-    case 'SET_PHASE':
-      return {
-        ...state,
-        phase: action.phase,
-      };
-    case 'HIDE_EFFECT':
-      return {
-        ...state,
-        isVisible: false,
-        phase: 'hidden',
-      };
-    default:
-      return state;
-  }
-}
-
-// Provider component
-export const CardUsageEffectProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(cardUsageEffectReducer, initialState);
-
-  // タイミング設宁E(ms単佁E
-  const timings = {
-    phase1: 10, // フェーズ1の表示時間�E�ほぼ即時�E移�E�E
-    phase2: 500, // フェーズ2の表示時間
-    phase3: 500, // フェーズ3の終亁E��での時間
-  };
-
-  // Action creators
-  const showCardUsageEffect = (params: CardUsageEffectParams): Promise<void> => {
-    // Cancel any ongoing animation
-    hideCardUsageEffect();
-
-    // Start new animation
-    dispatch({ type: 'SHOW_EFFECT', params });
-
-    return new Promise(resolve => {
-      const schedule = [
-        {
-          delay: timings.phase1,
-          action: () => dispatch({ type: 'SET_PHASE', phase: 'phase2' }),
-        },
-        {
-          delay: timings.phase1 + timings.phase2 + 500,
-          action: () => dispatch({ type: 'SET_PHASE', phase: 'phase3' }),
-        },
-        {
-          delay: timings.phase1 + timings.phase2 + timings.phase3 + 500,
-          action: () => {
-            dispatch({ type: 'HIDE_EFFECT' });
-            resolve();
-          },
-        },
-      ];
-
-      // 吁E��クションをスケジュールどおりに実衁E
-      schedule.forEach(({ delay, action }) => {
-        setTimeout(action, delay);
-      });
+  const addCardUsage = useCallback((cardId: string) => {
+    setActiveCardIds(prev => {
+      if (prev.includes(cardId)) return prev;
+      return [...prev, cardId];
     });
-  };
+  }, []);
 
-  const hideCardUsageEffect = () => {
-    dispatch({ type: 'HIDE_EFFECT' });
-  };
+  const removeCardUsage = useCallback((cardId: string) => {
+    setActiveCardIds(prev => prev.filter(id => id !== cardId));
+  }, []);
 
-  // Memoized context value
-  const contextValue = useMemo(
-    () => ({ state, showCardUsageEffect, hideCardUsageEffect }),
-    [state]
-  );
+  const scheduleRemoval = useCallback((cardId: string) => {
+    if (typeof window === 'undefined') return;
+    
+    const existing = cleanupTimeouts.current.get(cardId);
+    if (existing) clearTimeout(existing);
+
+    const timeout = setTimeout(() => {
+      setActiveCardIds(prev => prev.filter(id => id !== cardId));
+      cleanupTimeouts.current.delete(cardId);
+    }, 1000);
+    cleanupTimeouts.current.set(cardId, timeout);
+  }, []);
 
   return (
-    <CardUsageEffectContext.Provider value={contextValue}>
+    <CardUsageEffectContext.Provider
+      value={{
+        activeCardIds,
+        addCardUsage,
+        removeCardUsage,
+        scheduleRemoval,
+      }}
+    >
       {children}
     </CardUsageEffectContext.Provider>
   );
+};
+
+export const useCardUsageEffect = () => {
+  const context = useContext(CardUsageEffectContext);
+
+  // ✅ サーバーサイド（ビルド時）のエラーを防止するガード
+  if (typeof window === 'undefined') {
+    return {
+      activeCardIds: [],
+      addCardUsage: () => {},
+      removeCardUsage: () => {},
+      scheduleRemoval: () => {},
+    };
+  }
+
+  if (context === undefined) {
+    throw new Error('useCardUsageEffect must be used within a CardUsageEffectProvider');
+  }
+  return context;
 };
