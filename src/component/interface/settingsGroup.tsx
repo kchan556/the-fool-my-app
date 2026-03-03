@@ -1,34 +1,26 @@
 'use client';
 
-import { ReactNode } from 'react';
+// 修正： type を追加して型専用インポートにします
+import type { ReactNode } from 'react';
 
 interface SettingsGroupProps {
   title: string;
+  description?: string;
   children: ReactNode;
-  defaultOpen?: boolean;
-  className?: string;
-  extra?: ReactNode;
 }
 
-export const SettingsGroup: React.FC<SettingsGroupProps> = ({
-  title,
-  children,
-  defaultOpen = false,
-  className = '',
-  extra,
-}) => {
+export const SettingsGroup = ({ title, description, children }: SettingsGroupProps) => {
   return (
-    <details
-      className={`border border-gray-300 shadow rounded-lg py-1 px-2 mb-4 ${className}`}
-      open={defaultOpen}
-    >
-      <summary className="flex items-center justify-between cursor-pointer py-1">
-        <div className="flex items-center justify-between w-full">
-          <h3 className="text-sm font-medium text-gray-700">{title}</h3>
-          <div className="flex items-center">{extra}</div>
-        </div>
-      </summary>
-      <div className="pl-3 pt-2">{children}</div>
-    </details>
+    <div className="space-y-4 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
+      <div className="space-y-1">
+        <h3 className="text-lg font-bold text-white tracking-tight">{title}</h3>
+        {description && (
+          <p className="text-sm text-zinc-500">{description}</p>
+        )}
+      </div>
+      <div className="space-y-4">
+        {children}
+      </div>
+    </div>
   );
 };
