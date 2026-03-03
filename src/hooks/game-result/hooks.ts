@@ -1,13 +1,18 @@
 'use client';
 
 import { useContext } from 'react';
-import { GameResultContext, GameResultContextType } from './context';
+import { GameResultContext } from './index';
 
-export const useGameResult = (): GameResultContextType => {
+export const useGameResult = () => {
   const context = useContext(GameResultContext);
 
-  if (context === undefined) {
-    throw new Error('useGameResult must be used within a GameResultProvider');
+  // SSRガード（ビルド時のエラー防止）
+  if (typeof window === 'undefined' || !context) {
+    return {
+      result: null,
+      setGameResult: () => {},
+      resetGameResult: () => {},
+    };
   }
 
   return context;
