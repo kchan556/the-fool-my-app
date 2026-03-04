@@ -43,7 +43,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "next.config.js"  ],
+, "next.config.js", "src/app/profile/src/_app_backup"  ],
   "exclude": [
     "node_modules"
   ]
