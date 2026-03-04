@@ -1,16 +1,6 @@
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs'; // これを追加
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const runtime = 'nodejs';
 
-import Link from 'next/link';
-
-export default function StatsPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">統計</h1>
-      <Link href="/" className="text-blue-500 hover:underline">ホームに戻る</Link>
-      <p className="mt-4">統計データは現在準備中です。</p>
-    </div>
-  );
+export default function Page() {
+  return <div>Success</div>;
 }
