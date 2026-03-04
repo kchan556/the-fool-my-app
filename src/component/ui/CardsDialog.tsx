@@ -1,4 +1,4 @@
-import { ICard } from '@/submodule/suit/types';
+import type { ICard } from '@/submodule/suit/types';
 import { CardView } from './CardView';
 
 interface CardsDialogViewProps {
@@ -29,7 +29,7 @@ export const CardsDialogView = ({
     >
       {/* Center container */}
       <div className="flex justify-center">
-        {/* チE��ォルト値の 1192 は 10*112+8*9 */}
+        {/* チE��ォルト値の 1192 は 10*112+8*9 */}
         <div className={`flex flex-wrap justify-start gap-2`} style={{ width }}>
           {cards?.map(card => (
             <CardView
