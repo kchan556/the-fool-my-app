@@ -1,6 +1,9 @@
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
 
-export default function Page() {
-  return <div>Success</div>;
+export default async function Page() {
+  return (
+    <main>
+      <h1>Success</h1>
+    </main>
+  );
 }
