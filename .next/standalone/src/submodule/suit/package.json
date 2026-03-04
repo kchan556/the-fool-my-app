@@ -1,0 +1,16 @@
+{
+  "name": "suit",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "dependency-cruiser": "^16.10.0",
+    "eslint": "^9.23.0",
+    "husky": "^9.1.7",
+    "knip": "^5.46.5",
+    "lint-staged": "^15.5.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
